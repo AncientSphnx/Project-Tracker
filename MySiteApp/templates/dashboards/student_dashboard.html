@@ -1,0 +1,111 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .card {
+            background: #ffffff;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 16px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+
+<div class="flex">
+    <!-- Sidebar -->
+    <div class="w-80 bg-purple-700 text-white p-8 min-h-screen rounded-lg border border-purple-5000">
+        <div class="text-3xl font-bold mb-10">Dashboard</div>
+        <ul>
+            <li class="mb-6">
+                <a href="#" class="text-white hover:text-gray-300">My Projects</a>
+            </li>
+            <li class="mb-6">
+                <a href="#" class="text-white hover:text-gray-300">Progress Tracker</a>
+            </li>
+            <li class="mb-6">
+                <a href="#" class="text-white hover:text-gray-300">Profile</a>
+            </li>
+            <li>
+                <a href="{% url 'login' %}" class="text-white hover:text-gray-300">Logout</a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-1 p-10">
+        <!-- Welcome message and student info -->
+        <div class="flex justify-between items-center mb-6">
+            <div>
+                <div class="text-2xl font-semibold text-gray-900">Hello, {{ user.username }} 👋</div>
+                <div class="text-gray-500">Welcome back, continue working on your projects!</div>
+            </div>
+            <div class="p-6 inline-flex bg-white rounded-lg shadow-lg">
+                <div class="p-2">
+                    <img src="https://placehold.co/100x100.png" alt="Profile image of {{ user.username }}" class="rounded-full">
+                </div>
+                <div class="pl-5">
+                    <div class="font-semibold text-lg">{{ user.username }}</div>
+                    <div class="text-sm text-gray-600">Location: SHIVAMOGGA, INDIA</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Project Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Sample Project Card -->
+            <div class="card">
+                <div class="flex justify-between items-center mb-4">
+                    <div class="font-bold text-lg">Biology Research</div>
+                    <div class="text-sm text-gray-600">Due: 12/20/2024</div>
+                </div>
+                <div class="mb-4">
+                    <p class="text-gray-600">Milestones: 3 completed, 2 remaining</p>
+                    <p class="text-gray-600">Tasks: 5 out of 8 completed</p>
+                </div>
+                <div class="flex justify-between">
+                    <button class="px-4 py-2 bg-blue-500 text-white text-xs rounded-full">View Details</button>
+                    <button class="px-4 py-2 bg-yellow-500 text-white text-xs rounded-full">Edit</button>
+                    <button class="px-4 py-2 bg-red-500 text-white text-xs rounded-full">Delete</button>
+                </div>
+            </div>
+
+            <!-- Another Project Card -->
+            <div class="card">
+                <div class="flex justify-between items-center mb-4">
+                    <div class="font-bold text-lg">Physics Lab</div>
+                    <div class="text-sm text-gray-600">Due: 12/22/2024</div>
+                </div>
+                <div class="mb-4">
+                    <p class="text-gray-600">Milestones: 1 completed, 4 remaining</p>
+                    <p class="text-gray-600">Tasks: 3 out of 7 completed</p>
+                </div>
+                <div class="flex justify-between">
+                    <button class="px-4 py-2 bg-blue-500 text-white text-xs rounded-full">View Details</button>
+                    <button class="px-4 py-2 bg-yellow-500 text-white text-xs rounded-full">Edit</button>
+                    <button class="px-4 py-2 bg-red-500 text-white text-xs rounded-full">Delete</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Project Creation Button -->
+        <div class="mt-8 text-center">
+            <button class="px-6 py-3 bg-green-500 text-white text-lg font-semibold rounded-full shadow-lg hover:bg-green-600">
+                Create New Project
+            </button>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
