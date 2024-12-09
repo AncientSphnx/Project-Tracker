@@ -1,7 +1,13 @@
 from django.urls import path
-from .views import user_form_view,user_list_view
+from django.contrib import admin
+from . import views
 
 urlpatterns = [
-    path('user-form/', user_form_view, name='user_form'),
-    path('user-list/',user_list_view,name='user_list'),
+    path('', views.login_view, name='login'),
+    path('register/', views.register_view, name='register'),
+    path('logout/', views.logout_view, name='logout'),
+    path('student/dashboard/', views.student_dashboard, name='student_dashboard'),
+    path('mentor/dashboard/', views.mentor_dashboard, name='mentor_dashboard'),
+    #path('admin/', admin.site.urls, name='admin_dashboard'),
+    path('access-denied/', views.access_denied, name='access_denied'),
 ]

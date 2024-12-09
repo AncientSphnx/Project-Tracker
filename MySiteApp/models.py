@@ -1,9 +1,20 @@
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-from django.db import models
+
+class User(AbstractUser):
+    ROLE_CHOICES = [
+        ('student', 'Student'),
+        ('mentor', 'Mentor'),
+        ('admin', 'Admin'),
+    ]
+    role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='student')
+    id = models.AutoField(primary_key=True)
+    def __str__(self):
+        return f"{self.username} ({self.role})"
 
 # User Table
-class User(models.Model):
+class users_table(models.Model):
     user_id = models.AutoField(primary_key=True)  # Auto-incrementing primary key
     email = models.EmailField(unique=True)       # Ensures unique emails
     role = models.CharField(max_length=50)       # Role of the user
