@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Details</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+
+<div class="flex w-full">
+    <!-- Sidebar -->
+    <div class="w-80 bg-purple-700 text-white p-8 min-h-screen rounded-lg border border-purple-5000">
+        <a href="{% url 'student_dashboard' %}"><div class="text-3xl font-bold mb-10">Dashboard</div></a>
+        <ul>
+            <li class="mb-6">
+                <a href="#" class="text-white hover:text-gray-300">My Projects</a>
+            </li>
+            <li class="mb-6">
+                <a href="#" class="text-white hover:text-gray-300">Progress Tracker</a>
+            </li>
+            <li class="mb-6">
+                <a href="{% url 'profile' %}" class="text-white hover:text-gray-300">Profile</a>
+            </li>
+            <li>
+                <a href="{% url 'login' %}" class="text-white hover:text-gray-300">Logout</a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-1 p-10">
+        <!-- Project Title and Information -->
+        <div class="bg-white p-8 rounded-lg shadow-lg mb-6">
+            <h1 class="text-3xl font-semibold text-gray-900 mb-2">{{ project.title }}</h1>
+            <p class="text-gray-600 mb-4">{{ project.description }}</p>
+            <p class="text-gray-500 mb-2">Start Date: <span class="text-gray-900">{{ project.start_date }}</span></p>
+            <p class="text-gray-500">Due Date: <span class="text-gray-900">{{ project.due_date }}</span></p>
+        </div>
+
+        <!-- Phases List -->
+        <div class="bg-white p-8 rounded-lg shadow-lg mb-6">
+            <h2 class="text-2xl font-semibold text-gray-900 mb-4">Phases</h2>
+            <ul class="list-disc pl-6">
+                {% for phase in phases %}
+                    <li class="text-gray-600 mb-2">
+                        <strong>{{ phase.title }}</strong> - {{ phase.status }} - Due: {{ phase.due_date }}
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <!-- Add Phase Button -->
+        <div class="text-center mt-8">
+            <a href="{% url 'create_phase' project.id %}">
+                <button class="px-6 py-3 bg-green-500 text-white text-lg font-semibold rounded-full shadow-lg hover:bg-green-600">
+                    Add Phase
+                </button>
+            </a>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

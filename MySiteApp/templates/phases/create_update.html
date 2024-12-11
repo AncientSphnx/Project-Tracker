@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Create Update</title>
+</head>
+<body>
+    <h1>Add Update to {{ phase.title }}</h1>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Add Update</button>
+    </form>
+</body>
+</html>

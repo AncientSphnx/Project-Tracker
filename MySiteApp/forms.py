@@ -1,18 +1,14 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from .models import User
+from . import models
 
-# Registration Form
-from django import forms
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from .models import User
 
 # Registration Form
 class RegistrationForm(UserCreationForm):
     password1 = forms.CharField(widget=forms.PasswordInput(), label="Password")
     password2 = forms.CharField(widget=forms.PasswordInput(), label="Confirm Password")
     class Meta:
-        model = User
+        model = models.User
         fields = ['username', 'email', 'password1', 'password2']
 
     def clean(self):
@@ -46,10 +42,40 @@ class RegistrationForm(UserCreationForm):
 # Login Form
 class LoginForm(AuthenticationForm):
     class Meta:
-        model = User
+        model = models.User
         fields = ['username', 'password']
 
+class ProfileUpdateForm(forms.ModelForm):
+    class Meta:
+        model = models.User
+        fields = ['username', 'profile_picture']  # Fields to update
+        widgets = {
+            'username': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter your username'}),
+            'profile_picture': forms.FileInput(attrs={'class': 'form-control'}),
+        }
 
+class ProjectForm(forms.ModelForm):
+    class Meta:
+        model = models.Project
+        fields = ['title', 'description', 'start_date', 'due_date']
+        widgets = {
+            'start_date': forms.DateInput(attrs={'type': 'date'}),
+            'due_date': forms.DateInput(attrs={'type': 'date'}),
+        }
+
+class PhaseForm(forms.ModelForm):
+    class Meta:
+        model = models.Phases
+        fields = ['title', 'description', 'due_date', 'status']
+        widgets = {
+            'due_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+        }
+
+
+class UpdateForm(forms.ModelForm):
+    class Meta:
+        model = models.Updates
+        fields = ['resources', 'comments']
 
 class UserForm(forms.Form):
     name = forms.CharField(max_length=100, label="Full Name", widget=forms.TextInput(attrs={'placeholder': 'Enter your name'}))

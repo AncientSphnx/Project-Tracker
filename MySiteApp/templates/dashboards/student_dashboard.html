@@ -25,7 +25,7 @@
 <div class="flex">
     <!-- Sidebar -->
     <div class="w-80 bg-purple-700 text-white p-8 min-h-screen rounded-lg border border-purple-5000">
-        <div class="text-3xl font-bold mb-10">Dashboard</div>
+        <a href="{% url 'student_dashboard' %}"><div class="text-3xl font-bold mb-10">Dashboard</div></a>
         <ul>
             <li class="mb-6">
                 <a href="#" class="text-white hover:text-gray-300">My Projects</a>
@@ -34,7 +34,7 @@
                 <a href="#" class="text-white hover:text-gray-300">Progress Tracker</a>
             </li>
             <li class="mb-6">
-                <a href="#" class="text-white hover:text-gray-300">Profile</a>
+                <a href="{% url 'profile' %}" class="text-white hover:text-gray-300">Profile</a>
             </li>
             <li>
                 <a href="{% url 'login' %}" class="text-white hover:text-gray-300">Logout</a>
@@ -52,7 +52,8 @@
             </div>
             <div class="p-6 inline-flex bg-white rounded-lg shadow-lg">
                 <div class="p-2">
-                    <img src="https://placehold.co/100x100.png" alt="Profile image of {{ user.username }}" class="rounded-full">
+                    <img src="{% if user.profile_picture %}{{ user.profile_picture.url }}{% else %}https://placehold.co/100x100.png{% endif %}" alt="Profile image of {{ user.username }}" 
+                    class="w-20 h-20 rounded-full object-cover border border-gray-200 shadow-md">
                 </div>
                 <div class="pl-5">
                     <div class="font-semibold text-lg">{{ user.username }}</div>
@@ -63,46 +64,36 @@
 
         <!-- Project Cards -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <!-- Sample Project Card -->
-            <div class="card">
-                <div class="flex justify-between items-center mb-4">
-                    <div class="font-bold text-lg">Biology Research</div>
-                    <div class="text-sm text-gray-600">Due: 12/20/2024</div>
+            {% for project in user.projects.all %}
+                <div class="card">
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="font-bold text-lg">{{ project.title }}</div>
+                        <div class="text-sm text-gray-600">Start: {{ project.start_date }}</div>
+                        <div class="text-sm text-gray-600">Due: {{ project.due_date }}</div>
+                    </div>
+                    <div class="mb-4">
+                        <p class="text-gray-600">Milestones: {{ project.phases.count }} phases</p>
+                        <p class="text-gray-600">Tasks: {{ project.phases.all|length }} tasks</p>
+                    </div>
+                    <div class="flex justify-between">
+                        <a href="{% url 'project_details' project_id=project.id %}"><button class="px-4 py-2 bg-blue-500 text-white text-xs rounded-full">View Details</button></a> 
+                        <button class="px-4 py-2 bg-yellow-500 text-white text-xs rounded-full">Edit</button>
+                        <button class="px-4 py-2 bg-red-500 text-white text-xs rounded-full">Delete</button>
+                    </div>
                 </div>
-                <div class="mb-4">
-                    <p class="text-gray-600">Milestones: 3 completed, 2 remaining</p>
-                    <p class="text-gray-600">Tasks: 5 out of 8 completed</p>
-                </div>
-                <div class="flex justify-between">
-                    <button class="px-4 py-2 bg-blue-500 text-white text-xs rounded-full">View Details</button>
-                    <button class="px-4 py-2 bg-yellow-500 text-white text-xs rounded-full">Edit</button>
-                    <button class="px-4 py-2 bg-red-500 text-white text-xs rounded-full">Delete</button>
-                </div>
-            </div>
-
-            <!-- Another Project Card -->
-            <div class="card">
-                <div class="flex justify-between items-center mb-4">
-                    <div class="font-bold text-lg">Physics Lab</div>
-                    <div class="text-sm text-gray-600">Due: 12/22/2024</div>
-                </div>
-                <div class="mb-4">
-                    <p class="text-gray-600">Milestones: 1 completed, 4 remaining</p>
-                    <p class="text-gray-600">Tasks: 3 out of 7 completed</p>
-                </div>
-                <div class="flex justify-between">
-                    <button class="px-4 py-2 bg-blue-500 text-white text-xs rounded-full">View Details</button>
-                    <button class="px-4 py-2 bg-yellow-500 text-white text-xs rounded-full">Edit</button>
-                    <button class="px-4 py-2 bg-red-500 text-white text-xs rounded-full">Delete</button>
-                </div>
-            </div>
+            {% empty %}
+                <p>No projects yet. Create a new project!</p>
+            {% endfor %}
         </div>
+
 
         <!-- Project Creation Button -->
         <div class="mt-8 text-center">
-            <button class="px-6 py-3 bg-green-500 text-white text-lg font-semibold rounded-full shadow-lg hover:bg-green-600">
-                Create New Project
-            </button>
+            <a href="{% url 'create_project' %}">
+                <button class="px-6 py-3 bg-green-500 text-white text-lg font-semibold rounded-full shadow-lg hover:bg-green-600">
+                    Create New Project
+                </button>
+            </a>
         </div>
     </div>
 </div>

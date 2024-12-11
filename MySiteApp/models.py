@@ -1,4 +1,5 @@
 from django.contrib.auth.models import AbstractUser
+from django.utils.timezone import now
 from django.db import models
 
 
@@ -10,6 +11,7 @@ class User(AbstractUser):
     ]
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='student')
     id = models.AutoField(primary_key=True)
+    profile_picture = models.ImageField(upload_to='profile_pictures/', null=True, blank=True)
     def __str__(self):
         return f"{self.username} ({self.role})"
 
@@ -25,30 +27,34 @@ class users_table(models.Model):
 
 # Project Table
 class Project(models.Model):
-    project_id = models.AutoField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     title = models.CharField(max_length=200)
+    description = models.TextField(blank=True, null=True)
     start_date = models.DateField()
-    user = models.ForeignKey(User, on_delete=models.CASCADE)  # Link to User table
+    due_date = models.DateField(default="2024-12-31")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='projects')
 
     def __str__(self):
         return self.title
 
-# Updates Table
+
+class Phases(models.Model):
+    id = models.AutoField(primary_key=True)
+    title = models.CharField(max_length=100,default="Default Phase Title")
+    description = models.TextField(blank=True, null=True)
+    due_date = models.DateField()
+    status = models.CharField(max_length=50, choices=[('pending', 'Pending'), ('completed', 'Completed')], default='pending')
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='phases')
+
+    def __str__(self):
+        return f"Phase: {self.title} ({self.project.title})"
+
+
 class Updates(models.Model):
-    update_id = models.AutoField(primary_key=True)
     resources = models.TextField()
     comments = models.TextField()
-    project = models.ForeignKey(Project, on_delete=models.CASCADE)  # Link to Project table
+    created_at = models.DateTimeField(auto_now_add=True)
+    phase = models.ForeignKey(Phases, on_delete=models.CASCADE, related_name='updates',default=1)
 
     def __str__(self):
-        return f"Update {self.update_id} for Project {self.project.title}"
-
-# Phases Table
-class Phases(models.Model):
-    p_id = models.AutoField(primary_key=True)
-    status = models.CharField(max_length=50)
-    due_date = models.DateField()
-    project = models.ForeignKey(Project, on_delete=models.CASCADE)  # Link to Project table
-
-    def __str__(self):
-        return f"Phase {self.p_id} for Project {self.project.title}"
+        return f"Update {self.pk} for Phase {self.phase.title}"

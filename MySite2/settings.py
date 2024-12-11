@@ -82,6 +82,9 @@ DATABASES = {
     }
 }
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
 AUTH_USER_MODEL = 'MySiteApp.User'  # Replace `your_app_name` with your app's name
 #LOGIN_REDIRECT_URL = '/redirect-dashboard/'  # Redirect after login
 
