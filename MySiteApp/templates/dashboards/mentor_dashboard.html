@@ -14,8 +14,8 @@
       <nav>
         <ul class="space-y-6">
           <li><a href="#" class="text-white hover:text-gray-300 text-[30px]">Dashboard</a></li>
-          <li><a href="#" class="text-white hover:text-gray-300 text-[30px]">Students</a></li>
-          <li><a href="#" class="text-white hover:text-gray-300 text-[30px]">Projects</a></li>
+          <li><a href="{% url 'allocated_students' %}" class="text-white hover:text-gray-300 text-[30px]">Students</a></li>
+          <li><a href="{% url 'mentor_student_projects' %}" class="text-white hover:text-gray-300 text-[30px]">Projects</a></li>
           <li><a href="#" class="text-white hover:text-gray-300 text-[30px]">Settings</a></li>
           <li><a href="{% url 'login' %}" class="text-white hover:text-gray-300 text-[30px]">Logout</a></li>
         </ul>
@@ -85,18 +85,14 @@
             <h3 class="text-lg font-semibold">Projects Overview</h3>
             <p class="text-gray-600 mt-2">Current projects you are mentoring.</p>
             <ul class="mt-4 space-y-3">
+              {% for project in project_data %}
               <li class="flex justify-between">
-                <span>Project A</span>
-                <span class="text-gray-500">80% Complete</span>
+                <span>{{ project.title }}</span>
+                <span class="text-gray-500">Completion: {{ project.completion_percentage }}%</span>
               </li>
-              <li class="flex justify-between">
-                <span>Project B</span>
-                <span class="text-gray-500">65% Complete</span>
-              </li>
-              <li class="flex justify-between">
-                <span>Project C</span>
-                <span class="text-gray-500">40% Complete</span>
-              </li>
+              {% empty %}
+              <p class="text-gray-600">No projects are currently assigned to you.</p>
+              {% endfor %}
             </ul>
           </div>
 

@@ -25,13 +25,13 @@
 <div class="flex">
     <!-- Sidebar -->
     <div class="w-80 bg-purple-700 text-white p-8 min-h-screen rounded-lg border border-purple-500">
-        <div class="text-3xl font-bold mb-10">Dashboard</div>
+        <a href="{% url 'student_dashboard' %}"><div class="text-3xl font-bold mb-10">Dashboard</div></a>
         <ul>
             <li class="mb-6">
                 <a href="{% url 'student_dashboard' %}" class="text-white hover:text-gray-300">Dashboard</a>
             </li>
             <li class="mb-6">
-                <a href="#" class="text-white hover:text-gray-300">My Projects</a>
+                <a href="{% url 'progress_tracker' %}" class="text-white hover:text-gray-300">Progress Tracker</a>
             </li>
             <li class="mb-6">
                 <a href="{% url 'profile' %}" class="text-white hover:text-gray-300">Profile</a>

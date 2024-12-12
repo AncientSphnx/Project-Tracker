@@ -13,8 +13,19 @@ class CustomUserAdmin(UserAdmin):
         super().save_model(request, obj, form, change)
 
 
+
+
 admin.site.register(models.User, CustomUserAdmin)
 admin.site.register(models.users_table)
-admin.site.register(models.Project)
+#admin.site.register(models.Project)
+@admin.register(models.Project)
+class ProjectAdmin(admin.ModelAdmin):
+    list_display = ('title', 'mentor', 'start_date', 'due_date')
+    filter_horizontal = ('students',)  
+admin.site.register(models.Task)
 admin.site.register(models.Updates)
 admin.site.register(models.Phases)
+admin.site.register(models.MentorStudentAllocation)
+
+
+

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete Phase</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+
+<div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md text-center">
+    <h2 class="text-2xl font-bold text-center mb-6">Delete Phase</h2>
+    <p class="mb-6">Are you sure you want to delete the phase "<strong>{{ phase.title }}</strong>"?</p>
+    <form method="POST">
+        {% csrf_token %}
+        <button type="submit" class="w-full py-2 bg-red-500 text-white rounded-lg">Delete Phase</button>
+    </form>
+    <a href="{% url 'project_details' phase.project.id %}" class="mt-4 inline-block text-blue-500 hover:underline">Cancel</a>
+</div>
+
+</body>
+</html>

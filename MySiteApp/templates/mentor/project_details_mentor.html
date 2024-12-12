@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ project.title }} Details</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+  <div class="flex min-h-screen">
+    <!-- Sidebar -->
+    <aside class="w-1/5 bg-blue-600 text-white p-6 rounded-lg border border-blue-5000">
+      <div class="text-2xl font-bold mb-10">📘 Mentor Panel</div>
+      <nav>
+        <ul class="space-y-6">
+          <li><a href="{% url 'mentor_student_projects' %}" class="text-white hover:text-gray-300 text-[30px]">Back to Projects</a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-8">
+      <!-- Header -->
+      <header>
+        <h1 class="text-3xl font-semibold">{{ project.title }}</h1>
+        <p class="text-gray-600 mt-2">Project details for the mentor.</p>
+      </header>
+
+      <!-- Project Details Section -->
+      <section class="mt-10">
+        <h2 class="text-xl font-semibold mb-4">Project Information</h2>
+        <div class="bg-white p-6 rounded-lg shadow-md">
+          <p><strong>Project Description:</strong> {{ project.description }}</p>
+          <p><strong>Start Date:</strong> {{ project.start_date }}</p>
+          <p><strong>Due Date:</strong> {{ project.due_date }}</p>
+          <p><strong>Completion Percentage:</strong> {{ project.completion_percentage }}%</p>
+          
+          <h3 class="mt-4 font-semibold">Allocated Students</h3>
+          <ul class="mt-2 space-y-2">
+            {% for student in project.students.all %}
+              <li>{{ student.username }}</li>
+            {% empty %}
+              <li>No students allocated.</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

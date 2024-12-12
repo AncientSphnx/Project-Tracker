@@ -28,10 +28,10 @@
         <a href="{% url 'student_dashboard' %}"><div class="text-3xl font-bold mb-10">Dashboard</div></a>
         <ul>
             <li class="mb-6">
-                <a href="#" class="text-white hover:text-gray-300">My Projects</a>
+                <a href="{% url 'all_projects' %}" class="text-white hover:text-gray-300">My Projects</a>
             </li>
             <li class="mb-6">
-                <a href="#" class="text-white hover:text-gray-300">Progress Tracker</a>
+                <a href="{% url 'progress_tracker' %}" class="text-white hover:text-gray-300">Progress Tracker</a>
             </li>
             <li class="mb-6">
                 <a href="{% url 'profile' %}" class="text-white hover:text-gray-300">Profile</a>
@@ -64,7 +64,7 @@
 
         <!-- Project Cards -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {% for project in user.projects.all %}
+            {% for project in allocated_projects %}
                 <div class="card">
                     <div class="flex justify-between items-center mb-4">
                         <div class="font-bold text-lg">{{ project.title }}</div>
@@ -78,7 +78,7 @@
                     <div class="flex justify-between">
                         <a href="{% url 'project_details' project_id=project.id %}"><button class="px-4 py-2 bg-blue-500 text-white text-xs rounded-full">View Details</button></a> 
                         <button class="px-4 py-2 bg-yellow-500 text-white text-xs rounded-full">Edit</button>
-                        <button class="px-4 py-2 bg-red-500 text-white text-xs rounded-full">Delete</button>
+                        <a href="{% url 'delete_project' project_id=project.id %}"><button class="px-4 py-2 bg-red-500 text-white text-xs rounded-full">Delete</button></a>
                     </div>
                 </div>
             {% empty %}

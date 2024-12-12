@@ -15,10 +15,10 @@
         <a href="{% url 'student_dashboard' %}"><div class="text-3xl font-bold mb-10">Dashboard</div></a>
         <ul>
             <li class="mb-6">
-                <a href="#" class="text-white hover:text-gray-300">My Projects</a>
+                <a href="{% url 'all_projects' %}" class="text-white hover:text-gray-300">My Projects</a>
             </li>
             <li class="mb-6">
-                <a href="#" class="text-white hover:text-gray-300">Progress Tracker</a>
+                <a href="{% url 'progress_tracker' %}" class="text-white hover:text-gray-300">Progress Tracker</a>
             </li>
             <li class="mb-6">
                 <a href="{% url 'profile' %}" class="text-white hover:text-gray-300">Profile</a>
@@ -35,11 +35,58 @@
             <h1 class="text-2xl font-semibold text-gray-900 mb-6">Add Phase to "{{ project.title }}"</h1>
             <form method="POST">
                 {% csrf_token %}
-                <div class="space-y-4">
-                    {{ form.as_p }}
-                </div>
-                <button type="submit" class="w-full py-2 mt-4 bg-green-500 text-white text-lg rounded-lg shadow-md hover:bg-green-600">
-                    Add Phase
+                <div class="space-y-6">
+                    <!-- Phase Form -->
+                    <div>
+                        <h2 class="text-lg font-bold text-gray-800 mb-4">Phase Details</h2>
+                        <div class="space-y-2">
+                            <label for="id_title" class="block text-gray-700 font-medium">Title</label>
+                            {{ form.title }}
+                        </div>
+                        <div class="space-y-2">
+                            <label for="id_description" class="block text-gray-700 font-medium">Description</label>
+                            {{ form.description }}
+                        </div>
+                        <div class="space-y-2">
+                            <label for="id_due_date" class="block text-gray-700 font-medium">Due Date</label>
+                            {{ form.due_date }}
+                        </div>
+                        <div class="space-y-2">
+                            <label for="id_status" class="block text-gray-700 font-medium">Status</label>
+                            {{ form.status }}
+                        </div>
+                    </div>
+
+                    <!-- Task FormSet -->
+                    <!--<div>
+                        <h2 class="text-lg font-bold text-gray-800 mb-4">Task Details</h2>
+                        {{ task_formset.management_form }}
+                        {% for task_form in task_formset %}
+                        <div class="bg-gray-100 p-4 rounded-lg mb-4">
+                            <div class="space-y-2">
+                                <label for="id_title" class="block text-gray-700 font-medium">Task Title</label>
+                                {{ task_form.title }}
+                            </div>
+                            <div class="space-y-2">
+                                <label for="id_description" class="block text-gray-700 font-medium">Task Description</label>
+                                {{ task_form.description }}
+                            </div>
+                            <div class="space-y-2">
+                                <label for="id_due_date" class="block text-gray-700 font-medium">Task Due Date</label>
+                                {{ task_form.due_date }}
+                            </div>
+                            <div class="space-y-2">
+                                <label for="id_status" class="block text-gray-700 font-medium">Task Status</label>
+                                {{ task_form.status }}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>-->
+
+                <!-- Submit Button -->
+                <button type="submit" class="w-full py-2 mt-6 bg-green-500 text-white text-lg rounded-lg shadow-md hover:bg-green-600">
+                    Add Phase and Tasks
                 </button>
             </form>
         </div>

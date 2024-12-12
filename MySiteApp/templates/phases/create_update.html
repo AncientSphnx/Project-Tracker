@@ -1,14 +1,98 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Create Update</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Phase</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <h1>Add Update to {{ phase.title }}</h1>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+
+<div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+    <h2 class="text-2xl font-bold text-center mb-6">Update Phase</h2>
     <form method="POST">
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Add Update</button>
+        
+        <div class="space-y-4">
+            <!-- Phase Fields -->
+            <div class="space-y-2">
+                <label for="id_title" class="block text-gray-700 font-medium">Phase Title</label>
+                {{ phase_form.title }}
+            </div>
+            <div class="space-y-2">
+                <label for="id_description" class="block text-gray-700 font-medium">Phase Description</label>
+                {{ phase_form.description }}
+            </div>
+            <div class="space-y-2">
+                <label for="id_due_date" class="block text-gray-700 font-medium">Phase Due Date</label>
+                {{ phase_form.due_date }}
+            </div>
+            <div class="space-y-2">
+                <label for="id_status" class="block text-gray-700 font-medium">Phase Status</label>
+                {{ phase_form.status }}
+            </div>
+
+            <!-- Task Formset Fields (for multiple tasks) -->
+            <div class="space-y-2 mt-6">
+                <h2 class="text-xl font-semibold text-gray-900 mb-4">Add Tasks</h2>
+
+                <!-- Render Task Formset -->
+                {{ task_formset.management_form }}  <!-- Management form for task formset -->
+                
+                {% for form in task_formset %}
+                    <div class="border p-4 rounded-lg space-y-4">
+                        <h3 class="text-lg font-semibold text-gray-900">Task {{ forloop.counter }}</h3>
+                        <div class="space-y-2">
+                            <label for="id_{{ form.prefix }}_title" class="block text-gray-700 font-medium">Task Title</label>
+                            {{ form.title }}
+                        </div>
+                        <div class="space-y-2">
+                            <label for="id_{{ form.prefix }}_description" class="block text-gray-700 font-medium">Task Description</label>
+                            {{ form.description }}
+                        </div>
+                        <div class="space-y-2">
+                            <label for="id_{{ form.prefix }}_due_date" class="block text-gray-700 font-medium">Task Due Date</label>
+                            {{ form.due_date }}
+                        </div>
+                        <div class="space-y-2">
+                            <label for="id_{{ form.prefix }}_status" class="block text-gray-700 font-medium">Task Status</label>
+                            {{ form.status }}
+                        </div>
+                    </div>
+                {% endfor %}
+                
+                <!-- Add New Task Form -->
+                <div class="border p-4 rounded-lg space-y-4 mt-4">
+                    <h3 class="text-lg font-semibold text-gray-900">Add New Task</h3>
+                    <div class="space-y-2">
+                        <label for="task_title" class="block text-gray-700 font-medium">Task Title</label>
+                        <input type="text" name="task_title" id="task_title" class="form-input mt-1 block w-full" placeholder="Enter Task Title">
+                    </div>
+                    <div class="space-y-2">
+                        <label for="task_description" class="block text-gray-700 font-medium">Task Description</label>
+                        <textarea name="task_description" id="task_description" class="form-textarea mt-1 block w-full" rows="3" placeholder="Enter Task Description"></textarea>
+                    </div>
+                    <div class="space-y-2">
+                        <label for="task_due_date" class="block text-gray-700 font-medium">Task Due Date</label>
+                        <input type="date" name="task_due_date" id="task_due_date" class="form-input mt-1 block w-full">
+                    </div>
+                    <div class="space-y-2">
+                        <label for="task_status" class="block text-gray-700 font-medium">Task Status</label>
+                        <select name="task_status" id="task_status" class="form-select mt-1 block w-full">
+                            <option value="pending">Pending</option>
+                            <option value="completed">Completed</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Submit Button -->
+        <a href="{% url 'project_details' project_id=phase.project.id%}"><button type="submit" class="w-full py-2 mt-6 bg-blue-500 text-white text-lg rounded-lg shadow-md hover:bg-blue-600">
+            Update Phase and Add Tasks
+        </button></a>
     </form>
+</div>
+
 </body>
 </html>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mentor Dashboard - Projects</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+  <div class="flex min-h-screen">
+    <!-- Sidebar -->
+    <aside class="w-1/5 bg-blue-600 text-white p-6 rounded-lg border border-blue-5000">
+      <div class="text-2xl font-bold mb-10">📘 Mentor Panel</div>
+      <nav>
+        <ul class="space-y-6">
+          <li><a href="#" class="text-white hover:text-gray-300 text-[30px]">Dashboard</a></li>
+          <li><a href="{% url 'allocated_students' %}" class="text-white hover:text-gray-300 text-[30px]">Students</a></li>
+          <li><a href="{% url 'mentor_student_projects' %}" class="text-white hover:text-gray-300 text-[30px]">Projects</a></li>
+          <li><a href="#" class="text-white hover:text-gray-300 text-[30px]">Settings</a></li>
+          <li><a href="{% url 'login' %}" class="text-white hover:text-gray-300 text-[30px]">Logout</a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-8">
+      <!-- Header -->
+      <header>
+        <h1 class="text-3xl font-semibold">Welcome, Mentor {{ user.username }}👋</h1>
+        <p class="text-gray-600 mt-2">Here are the projects you're mentoring.</p>
+      </header>
+
+      <!-- Projects Overview -->
+      <section class="mt-10">
+        <h2 class="text-xl font-semibold mb-4">Projects Overview</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {% for project in student_projects %}
+          <div class="p-6 bg-white rounded-lg shadow-md">
+            <h3 class="text-lg font-semibold">{{ project.title }}</h3>
+            <p class="text-gray-600 mt-2">{{ project.description }}</p>
+            <p class="text-gray-600 mt-2">Start Date: {{ project.start_date }}</p>
+            <p class="text-gray-600 mt-2">Due Date: {{ project.due_date }}</p>
+            <p class="text-gray-600 mt-2">Completion: {{ project.completion_percentage|floatformat:2 }}%</p>
+            <a href="{% url 'project_detail_mentor' project.id %}" class="block mt-4 text-blue-600 hover:underline">View Details</a>
+          </div>
+          {% empty %}
+          <p class="text-gray-600">You have no projects allocated to you.</p>
+          {% endfor %}
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Chart.js for Mentoring Hours -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const ctx = document.getElementById('mentoringChart').getContext('2d');
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+          datasets: [{
+            label: 'Hours Spent',
+            data: [2, 4, 3, 5, 6, 4, 3],
+            backgroundColor: '#60A5FA',
+            borderRadius: 5
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: { beginAtZero: true }
+          }
+        }
+      });
+    });
+  </script>
+</body>
+</html>

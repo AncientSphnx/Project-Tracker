@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Allocated Students</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+  <div class="flex min-h-screen">
+    <!-- Sidebar -->
+    <aside class="w-1/5 bg-blue-600 text-white p-6 rounded-lg border border-blue-5000">
+      <div class="text-2xl font-bold mb-10">📘 Mentor Panel</div>
+      <nav>
+        <ul class="space-y-6">
+          <li><a href="#" class="text-white hover:text-gray-300 text-[30px]">Dashboard</a></li>
+          <li><a href="#" class="text-white hover:text-gray-300 text-[30px]">Students</a></li>
+          <li><a href="#" class="text-white hover:text-gray-300 text-[30px]">Projects</a></li>
+          <li><a href="#" class="text-white hover:text-gray-300 text-[30px]">Settings</a></li>
+          <li><a href="{% url 'login' %}" class="text-white hover:text-gray-300 text-[30px]">Logout</a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-8">
+      <!-- Header -->
+      <header>
+        <h1 class="text-3xl font-semibold">Allocated Students</h1>
+        <p class="text-gray-600 mt-2">Students you are mentoring are listed below.</p>
+      </header>
+
+      <!-- Allocated Students Table -->
+      <section class="mt-10">
+        <div class="p-6 bg-white rounded-lg shadow-md">
+          {% if students %}
+          <table class="min-w-full border-collapse border border-gray-300">
+            <thead class="bg-blue-600 text-white">
+              <tr>
+                <th class="border border-gray-300 px-4 py-2">#</th>
+                <!--<th class="border border-gray-300 px-4 py-2">Profile Picture</th>-->
+                <th class="border border-gray-300 px-4 py-2">Name</th>
+                <th class="border border-gray-300 px-4 py-2">Email</th>
+                <th class="border border-gray-300 px-4 py-2">Assigned Projects</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for student in students %}
+              <tr class="bg-gray-50 hover:bg-gray-100">
+                <td class="border border-gray-300 px-4 py-2 text-center">{{ forloop.counter }}</td>
+                <!--<td class="border border-gray-300 px-4 py-2 text-center">
+                  {% if student.profile_picture %}
+                  <img src="{{ student.profile_picture.url }}" alt="{{ student.username }}" class="rounded-full h-12 w-12">
+                  {% else %}
+                  <img src="" alt="Default Profile Picture" class="rounded-full h-12 w-12">
+                  {% endif %}
+                </td>-->
+                <td class="border border-gray-300 px-4 py-2">{{ student.username }}</td>
+                <td class="border border-gray-300 px-4 py-2">{{ student.email }}</td>
+                <td class="border border-gray-300 px-4 py-2">
+                  <ul class="list-disc ml-4">
+                    {% for project in student.assigned_projects.all %}
+                    <li>{{ project.title }}</li>
+                    {% endfor %}
+                  </ul>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          {% else %}
+          <div class="alert alert-warning bg-yellow-100 text-yellow-800 p-4 rounded-md">
+            <p>No students have been allocated to you yet.</p>
+          </div>
+          {% endif %}
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

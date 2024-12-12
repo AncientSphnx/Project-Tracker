@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phase Details</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+
+<div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md mx-auto">
+    <h2 class="text-2xl font-bold mb-4">Phase Details: {{ phase.title }}</h2>
+
+<div class="space-y-4">
+    <!-- Display Phase Details -->
+    <p><strong>Description:</strong> {{ phase.description }}</p>
+    <p><strong>Due Date:</strong> {{ phase.due_date }}</p>
+    <p><strong>Status:</strong> {{ phase.status }}</p>
+</div>
+
+<!-- Display Tasks for This Phase -->
+<h3 class="text-xl font-semibold mt-6">Tasks</h3>
+
+{% if tasks %}
+    <ul class="space-y-2">
+        {% for task in tasks %}
+            <li class="p-4 bg-gray-50 rounded-lg shadow-sm">
+                <strong>{{ task.title }}</strong><br>
+                <span><strong>Description:</strong> {{ task.description }}</span><br>
+                <span><strong>Due Date:</strong> {{ task.due_date }}</span><br>
+                <span><strong>Status:</strong> {{ task.status }}</span>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No tasks available for this phase.</p>
+{% endif %}
+
+    <div class="mt-6">
+        <a href="{% url 'project_details' phase.project.id %}" class="text-blue-500 hover:text-blue-700">Back to Project Details</a>
+    </div>
+</div>
+
+</body>
+</html>

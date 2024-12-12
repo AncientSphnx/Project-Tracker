@@ -69,6 +69,8 @@ TEMPLATES = [
     },
 ]
 
+
+
 WSGI_APPLICATION = 'MySite2.wsgi.application'
 
 
