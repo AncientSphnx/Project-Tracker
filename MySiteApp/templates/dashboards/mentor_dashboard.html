@@ -38,12 +38,26 @@
           <div class="p-6 bg-white rounded-lg shadow-md">
             <h3 class="text-lg font-semibold">Upload Resources</h3>
             <p class="text-gray-600 mt-2">Share resources such as PDFs, documents, and guides with your students.</p>
-            <form action="#" method="POST" class="mt-4" enctype="multipart/form-data">
-              <input 
-                type="file" 
-                name="resource" 
-                class="block w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-300"
-                required>
+            <form action="{% url 'mentor_dashboard' %}" method="POST" class="mt-4" enctype="multipart/form-data">
+              {% csrf_token %}
+              <div class="grid grid-cols-1 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700">Title</label>
+                  {{ form.title }}
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700">File</label>
+                  {{ form.file }}
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700">Description</label>
+                  {{ form.description }}
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700">Students</label>
+                  {{ form.students }}
+                </div>
+              </div>
               <button type="submit" class="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg">Upload</button>
             </form>
           </div>
@@ -51,26 +65,21 @@
           <!-- Download Resources -->
           <div class="p-6 bg-white rounded-lg shadow-md">
             <h3 class="text-lg font-semibold">Download Resources</h3>
-            <p class="text-gray-600 mt-2">Access resources uploaded by mentors for your projects.</p>
+            <p class="text-gray-600 mt-2">Access resources shared with your students or received from them.</p>
             <ul class="mt-4 space-y-3">
-              <li>
-                <a 
-                  href="#" 
-                  class="block text-blue-600 underline"
-                  download="Guide.pdf">Project Guide.pdf</a>
-              </li>
-              <li>
-                <a 
-                  href="#" 
-                  class="block text-blue-600 underline"
-                  download="Checklist.docx">Checklist.docx</a>
-              </li>
-              <li>
-                <a 
-                  href="#" 
-                  class="block text-blue-600 underline"
-                  download="Resources.zip">All Resources.zip</a>
-              </li>
+              {% if resources %}
+                {% for resource in resources %}
+                  <li class="flex justify-between items-center">
+                    <a 
+                      href="{{ resource.file.url }}" 
+                      class="block text-blue-600 underline"
+                      download="{{ resource.file.name }}">{{ resource.title }}</a>
+                    <span class="text-sm text-gray-500">Uploaded by: {{ resource.mentor.username }}</span>
+                  </li>
+                {% endfor %}
+              {% else %}
+                <p class="text-gray-600">No resources have been shared yet.</p>
+              {% endif %}
             </ul>
           </div>
         </div>

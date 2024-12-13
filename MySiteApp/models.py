@@ -131,3 +131,20 @@ class MentorStudentAllocation(models.Model):
 
     def __str__(self):
         return f"{self.mentor.username} -> {self.student.username}"
+    
+
+class Resource(models.Model):
+    mentor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='uploaded_resources')
+    title = models.CharField(max_length=255)
+    file = models.FileField(upload_to='resources/')
+    description = models.TextField(blank=True, null=True)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+    students = models.ManyToManyField(User, related_name='accessible_resources')
+
+    def __str__(self):
+        return self.title
+    
+    def delete(self, *args, **kwargs):
+        # Delete the file from storage when the Resource is deleted
+        self.file.delete(save=False)
+        super().delete(*args, **kwargs)

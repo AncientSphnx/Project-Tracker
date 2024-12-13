@@ -62,6 +62,82 @@
             </div>
         </div>
 
+        <section class="mt-10">
+            <h2 class="text-xl font-semibold mb-6">📚 Resources Shared by Your Mentor</h2>
+            <div class="p-6 bg-white rounded-lg shadow-md">
+                <h3 class="text-lg font-semibold">Your Resources</h3>
+                <ul class="mt-4 space-y-3">
+                    {% for resource in user.accessible_resources.all %}
+                        <li class="flex justify-between items-center">
+                            <a href="{{ resource.file.url }}" class="text-blue-600 underline" download>
+                                {{ resource.title }}
+                            </a>
+                            <form action="{% url 'delete_resource' resource.id %}" method="POST" class="ml-4">
+                                {% csrf_token %}
+                                <button type="submit" class="px-4 py-2 bg-red-600 text-white text-xs rounded-full">
+                                    Delete
+                                </button>
+                            </form>
+                        </li>
+                    {% empty %}
+                        <p class="text-gray-600">No resources available.</p>
+                    {% endfor %}
+                </ul>
+            </div>
+        </section><br>
+        <section class="mt-10">
+            <h2 class="text-xl font-semibold mb-6">📤 Send Files to Your Mentor</h2>
+            <div class="p-6 bg-white rounded-lg shadow-md">
+                <h3 class="text-lg font-semibold">Upload Files</h3>
+                <p class="text-gray-600 mt-2">Share files with your mentor for feedback or review.</p>
+                
+                <form action="{% url 'student_dashboard' %}" method="POST" enctype="multipart/form-data" class="mt-4">
+                    {% csrf_token %}
+                    <div class="grid grid-cols-1 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Title</label>
+                            {{ form.title }}
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">File</label>
+                            {{ form.file }}
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Description</label>
+                            {{ form.description }}
+                        </div>
+                    </div>
+                    <button type="submit" class="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                        Upload
+                    </button>
+                </form>
+            </div>
+        
+            <!-- Files Sent to Mentor -->
+            <div class="mt-10">
+                <h3 class="text-lg font-semibold">Files Sent to Mentor</h3>
+                <ul class="mt-4 space-y-3">
+                    {% for file in files_sent_to_mentor %}
+                        <li class="flex justify-between items-center">
+                            <a href="{{ file.file.url }}" class="text-blue-600 underline" download>
+                                {{ file.title }}
+                            </a>
+                            <span class="text-sm text-gray-500">{{ file.description }}</span>
+                            <span class="text-sm text-gray-500">Uploaded: {{ file.uploaded_at|date:"Y-m-d H:i" }}</span>
+                            <form action="{% url 'delete_resource' file.id %}" method="POST" class="ml-4">
+                                {% csrf_token %}
+                                <button type="submit" class="px-4 py-2 bg-red-600 text-white text-xs rounded-full">
+                                    Delete
+                                </button>
+                            </form>
+                        </li>
+                    {% empty %}
+                        <p class="text-gray-600">No files sent to your mentor yet.</p>
+                    {% endfor %}
+                </ul>
+            </div>
+        </section><br>
+
         <!-- Project Cards -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {% for project in allocated_projects %}

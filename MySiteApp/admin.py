@@ -23,6 +23,7 @@ class ProjectAdmin(admin.ModelAdmin):
     list_display = ('title', 'mentor', 'start_date', 'due_date')
     filter_horizontal = ('students',)  
 admin.site.register(models.Task)
+admin.site.register(models.Resource)
 admin.site.register(models.Updates)
 admin.site.register(models.Phases)
 admin.site.register(models.MentorStudentAllocation)

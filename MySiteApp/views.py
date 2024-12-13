@@ -1,6 +1,7 @@
 
 from django.shortcuts import render, redirect,get_object_or_404
 from django.forms import inlineformset_factory
+from django.http import HttpResponseForbidden
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -92,17 +93,40 @@ def student_dashboard(request):
     if request.user.role != 'student':
         return redirect('access_denied')  # Redirect unauthorized users
     #projects_in_progress = request.user.projects.filter(status="in-progress").distinct().count()  # Assuming a reverse relationship
+    mentor = request.user.mentor
+    accessible_resources = models.Resource.objects.filter(students=request.user)
     allocated_projects = models.Project.objects.filter(
         students__in=[request.user]
     )
-    return render(request, 'dashboards/student_dashboard.html', {'allocated_projects': allocated_projects})
+    files_sent_to_mentor = models.Resource.objects.filter(students=request.user, mentor=mentor)
+    if request.method == 'POST':
+        form = forms.ResourceForm(request.POST, request.FILES)
+        if form.is_valid():
+            resource = form.save(commit=False)
+            resource.sender = request.user  # Set the sender as the current user
+            resource.recipient = request.user.mentor  # Set the mentor as the recipient
+            resource.save()
+            return redirect('student_dashboard')  # Refresh the page after form submission
+    else:
+        form = forms.ResourceForm()
+    
+    return render(request, 'dashboards/student_dashboard.html', {'allocated_projects': allocated_projects,'accessible_resources': accessible_resources,'files_sent_to_mentor': files_sent_to_mentor,'form':form})
 
 @login_required
 def mentor_dashboard(request):
     if request.user.role != 'mentor':
         return redirect('access_denied')  # Redirect unauthorized users
     projects = models.Project.objects.filter(mentor=request.user)
-
+    if request.method == 'POST':
+        form = forms.ResourceForm(request.POST, request.FILES)
+        if form.is_valid():
+            resource = form.save(commit=False)
+            resource.mentor = request.user  # Assign the logged-in mentor
+            resource.save()
+            form.save_m2m()  # Save Many-to-Many relationships
+            return redirect('mentor_dashboard')  # Refresh the page after upload
+    else:
+        form = forms.ResourceForm()
     project_data = []
     for project in projects:
         project.allocated_students = project.allocated_students()
@@ -111,10 +135,12 @@ def mentor_dashboard(request):
             'project': project,
             'title': project.title,
             'allocated_students': models.Project.allocated_students,
-            'completion_percentage': completion_percentage
+            'completion_percentage': completion_percentage,
         })
-
-    return render(request, 'dashboards/mentor_dashboard.html', {'project_data': project_data,'user': request.user})
+    uploaded_resources = models.Resource.objects.filter(mentor=request.user)
+    student_documents = models.Resource.objects.filter(mentor=request.user)
+    return render(request, 'dashboards/mentor_dashboard.html', {'project_data': project_data,'user': request.user,'form': form,
+        'uploaded_resources': uploaded_resources,'student_documents': student_documents})
 
 @login_required
 def admin_dashboard(request):
@@ -283,6 +309,7 @@ def delete_phase(request, phase_id):
 def all_projects(request):
     # Get all the projects for the logged-in user
     projects = models.Project.objects.filter(owner=request.user)
+    
     return render(request, 'projects/all_projects.html', {'projects': projects})
 
 @login_required
@@ -369,6 +396,44 @@ def project_detail_mentor(request, project_id):
     # Render the project details template
     return render(request, 'mentor/project_details_mentor.html', {'project': project})
 
+@login_required
+def upload_resource(request):
+    if request.method == 'POST':
+        form = forms.ResourceForm(request.POST, request.FILES)
+        if form.is_valid():
+            resource = form.save(commit=False)
+            resource.mentor = request.user  # Assign the logged-in mentor
+            resource.save()
+            form.save_m2m()  # Save Many-to-Many relationships
+            return redirect('mentor_dashboard')  # Redirect to the dashboard
+    else:
+        form = forms.ResourceForm()
+    return render(request, 'mentor/upload_resource.html', {'form': form})
+
+@login_required
+def upload_document(request):
+    if request.method == 'POST':
+        form = forms.ResourceForm(request.POST, request.FILES)
+        if form.is_valid():
+            document = form.save(commit=False)
+            document.student = request.user
+            document.mentor = request.user.profile.assigned_mentor  # Replace with your logic for mentor assignment
+            document.save()
+            return redirect('student_dashboard')  # Replace with the name of your student dashboard URL
+    else:
+        form = forms.ResourceForm()
+    return render(request, 'upload_document.html', {'form': form})
+
+@login_required
+def delete_resource(request, resource_id):
+    resource = get_object_or_404(models.Resource, id=resource_id)
+
+    # Ensure only assigned students or mentors can delete the resource
+    if request.user == resource.mentor or request.user in resource.students.all():
+        resource.delete()
+        return redirect('student_dashboard')  # Replace with the name of your dashboard URL
+    else:
+        return HttpResponseForbidden("You don't have permission to delete this resource.")
 
 
 def index(request):

@@ -4,6 +4,7 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from . import models
 
 
+
 # Registration Form
 class RegistrationForm(UserCreationForm):
     password1 = forms.CharField(widget=forms.PasswordInput(), label="Password")
@@ -120,6 +121,14 @@ class TaskForm(forms.ModelForm):
         }
 
 TaskFormSet = modelformset_factory(models.Task, form=TaskForm, extra=1)
+
+class ResourceForm(forms.ModelForm):
+    class Meta:
+        model = models.Resource
+        fields = ['title', 'file', 'description', 'students']
+
+
+
 
 class UpdateForm(forms.ModelForm):
     class Meta:
