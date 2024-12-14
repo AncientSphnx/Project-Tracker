@@ -52,8 +52,14 @@
                         <p class="text-gray-600 mt-2">Status: {{ phase.status }}</p>
                         <p class="text-gray-600 mt-2">Due Date: {{ phase.due_date }}</p>
                         <div class="mt-4 flex space-x-4">
-                            <a href="{% url 'create_update' phase.id %}" class="px-4 py-2 bg-yellow-500 text-white rounded-lg">Update</a>
-                            <a href="{% url 'delete_phase' phase.id %}" class="px-4 py-2 bg-red-500 text-white rounded-lg">Delete</a>
+                            <a href="{% url 'create_update' phase.id %}" class="px-4 py-2 bg-yellow-500 text-white rounded-lg">Update Phase</a>
+                            <a href="{% url 'delete_phase' phase.id %}" class="px-4 py-2 bg-red-500 text-white rounded-lg">Delete Phase</a>
+                        </div>
+                        <!-- Update Task Section -->
+                        <div class="mt-4">
+                            <a href="{% url 'update_task' phase.id %}" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+                                Update Tasks
+                            </a>
                         </div>
                     </div>
                 {% empty %}

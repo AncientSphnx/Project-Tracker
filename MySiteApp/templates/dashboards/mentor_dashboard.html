@@ -5,18 +5,50 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mentor Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .calendar {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 1rem;
+      text-align: center;
+    }
+    .calendar .day {
+      padding: 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .calendar .day:hover {
+      background-color: #d1d5db;
+    }
+    .calendar .event {
+      display: inline-block;
+      margin-top: 0.5rem;
+      padding: 0.2rem 0.5rem;
+      background-color: #34d399;
+      color: white;
+      border-radius: 4px;
+    }
+    .flex-container {
+      display: flex;
+      justify-content: space-between;
+      gap: 2rem;
+    }
+    .flex-item {
+      flex: 1;
+    }
+  </style>
 </head>
 <body class="bg-gray-100">
   <div class="flex min-h-screen">
     <!-- Sidebar -->
     <aside class="w-1/5 bg-blue-600 text-white p-6 rounded-lg border border-blue-5000">
-      <div class="text-2xl font-bold mb-10">📘 Mentor Panel</div>
+      <div class="text-2xl font-bold mb-10">📘 Guide Panel</div>
       <nav>
         <ul class="space-y-6">
           <li><a href="#" class="text-white hover:text-gray-300 text-[30px]">Dashboard</a></li>
           <li><a href="{% url 'allocated_students' %}" class="text-white hover:text-gray-300 text-[30px]">Students</a></li>
           <li><a href="{% url 'mentor_student_projects' %}" class="text-white hover:text-gray-300 text-[30px]">Projects</a></li>
-          <li><a href="#" class="text-white hover:text-gray-300 text-[30px]">Settings</a></li>
+          
           <li><a href="{% url 'login' %}" class="text-white hover:text-gray-300 text-[30px]">Logout</a></li>
         </ul>
       </nav>
@@ -26,15 +58,14 @@
     <main class="flex-1 p-8">
       <!-- Header -->
       <header>
-        <h1 class="text-3xl font-semibold">Welcome, Mentor {{ user.username }}👋</h1>
+        <h1 class="text-3xl font-semibold">Welcome, Guide {{ user.username }}👋</h1>
         <p class="text-gray-600 mt-2">Manage your resources and help students with their projects!</p>
       </header>
 
-      <!-- Upload and Download Resources -->
-      <section class="mt-10">
-        <h2 class="text-xl font-semibold mb-4">Resource Management</h2>
-        <div class="grid grid-cols-2 gap-6">
-          <!-- Upload Resources -->
+      <!-- Upload Resources and Overview Section -->
+      <section class="mt-10 flex-container">
+        <div class="flex-item">
+          <h2 class="text-xl font-semibold mb-4">Resource Management</h2>
           <div class="p-6 bg-white rounded-lg shadow-md">
             <h3 class="text-lg font-semibold">Upload Resources</h3>
             <p class="text-gray-600 mt-2">Share resources such as PDFs, documents, and guides with your students.</p>
@@ -61,35 +92,12 @@
               <button type="submit" class="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg">Upload</button>
             </form>
           </div>
-
-          <!-- Download Resources -->
-          <div class="p-6 bg-white rounded-lg shadow-md">
-            <h3 class="text-lg font-semibold">Download Resources</h3>
-            <p class="text-gray-600 mt-2">Access resources shared with your students or received from them.</p>
-            <ul class="mt-4 space-y-3">
-              {% if resources %}
-                {% for resource in resources %}
-                  <li class="flex justify-between items-center">
-                    <a 
-                      href="{{ resource.file.url }}" 
-                      class="block text-blue-600 underline"
-                      download="{{ resource.file.name }}">{{ resource.title }}</a>
-                    <span class="text-sm text-gray-500">Uploaded by: {{ resource.mentor.username }}</span>
-                  </li>
-                {% endfor %}
-              {% else %}
-                <p class="text-gray-600">No resources have been shared yet.</p>
-              {% endif %}
-            </ul>
-          </div>
         </div>
-      </section>
 
-      <!-- Activity Overview -->
-      <section class="mt-10">
-        <h2 class="text-xl font-semibold mb-4">Activity Overview</h2>
-        <div class="grid grid-cols-2 gap-6">
-          <!-- Projects Summary -->
+        <!-- Activity Overview and Upcoming Deadlines Section -->
+        <div class="flex-item">
+          <!-- Activity Overview -->
+          <h2 class="text-xl font-semibold mb-4">Activity Overview</h2>
           <div class="p-6 bg-white rounded-lg shadow-md">
             <h3 class="text-lg font-semibold">Projects Overview</h3>
             <p class="text-gray-600 mt-2">Current projects you are mentoring.</p>
@@ -105,41 +113,25 @@
             </ul>
           </div>
 
-          <!-- Mentoring Activity -->
+          <!-- Upcoming Deadlines -->
+          <h2 class="text-xl font-semibold mb-4 mt-10">Upcoming Deadlines</h2>
           <div class="p-6 bg-white rounded-lg shadow-md">
-            <h3 class="text-lg font-semibold">Mentoring Hours</h3>
-            <p class="text-gray-600 mt-2">Track your weekly mentoring hours.</p>
-            <canvas id="mentoringChart" class="mt-4"></canvas>
+            {% if upcoming_deadlines %}
+              <ul class="space-y-3">
+                {% for project in upcoming_deadlines %}
+                  <li class="flex justify-between">
+                    <span class="font-medium">{{ project.title }}</span>
+                    <span class="text-gray-500">Deadline: {{ project.due_date }}</span>
+                  </li>
+                {% endfor %}
+              </ul>
+            {% else %}
+              <p class="text-gray-600">No upcoming deadlines this week.</p>
+            {% endif %}
           </div>
         </div>
       </section>
     </main>
   </div>
-
-  <!-- Chart.js for Mentoring Hours -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const ctx = document.getElementById('mentoringChart').getContext('2d');
-      new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-          datasets: [{
-            label: 'Hours Spent',
-            data: [2, 4, 3, 5, 6, 4, 3],
-            backgroundColor: '#60A5FA',
-            borderRadius: 5
-          }]
-        },
-        options: {
-          responsive: true,
-          scales: {
-            y: { beginAtZero: true }
-          }
-        }
-      });
-    });
-  </script>
 </body>
 </html>

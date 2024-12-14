@@ -23,5 +23,6 @@ urlpatterns = [
     path('allocated/', views.allocated_students_view, name='allocated_students'),
     path('mentor/projects/', views.mentor_student_projects, name='mentor_student_projects'),
     path('projects/<int:project_id>/mentor/', views.project_detail_mentor, name='project_detail_mentor'),
-     path('resource/delete/<int:resource_id>/', views.delete_resource, name='delete_resource'),
+    path('resource/delete/<int:resource_id>/', views.delete_resource, name='delete_resource'),
+    path('phases/<int:phase_id>/tasks/update/', views.update_tasks, name='update_task'),
 ]

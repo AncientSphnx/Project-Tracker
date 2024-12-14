@@ -1,6 +1,8 @@
 
 from django.shortcuts import render, redirect,get_object_or_404
-from django.forms import inlineformset_factory
+from datetime import date, timedelta
+from django.db import transaction  # For atomic operations
+from django.http import JsonResponse
 from django.http import HttpResponseForbidden
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
@@ -92,41 +94,73 @@ def dashboard_view(request):
 def student_dashboard(request):
     if request.user.role != 'student':
         return redirect('access_denied')  # Redirect unauthorized users
-    #projects_in_progress = request.user.projects.filter(status="in-progress").distinct().count()  # Assuming a reverse relationship
+
+    # Fetch allocated mentor for the student
+    '''mentor = getattr(request.user, 'mentor', None)
+    if not mentor:
+        messages.error(request, "You are not assigned to a mentor.")
+        return redirect('profile')  # Redirect to profile or an error page'''
     mentor = request.user.mentor
+    # Fetch related data
     accessible_resources = models.Resource.objects.filter(students=request.user)
-    allocated_projects = models.Project.objects.filter(
-        students__in=[request.user]
-    )
+    allocated_projects = models.Project.objects.filter(students__in=[request.user])
     files_sent_to_mentor = models.Resource.objects.filter(students=request.user, mentor=mentor)
+
     if request.method == 'POST':
         form = forms.ResourceForm(request.POST, request.FILES)
         if form.is_valid():
-            resource = form.save(commit=False)
-            resource.sender = request.user  # Set the sender as the current user
-            resource.recipient = request.user.mentor  # Set the mentor as the recipient
-            resource.save()
+            resource = form.save(commit=False)  # Create the object but don't save yet
+            resource.mentor = mentor  # Automatically assign the student's mentor
+            resource.save()  # Save the object to the database
+            resource.students.add(request.user)  # Link the resource to the current student
             return redirect('student_dashboard')  # Refresh the page after form submission
+        else:
+            print(form.errors)  # Debug form errors if needed
     else:
         form = forms.ResourceForm()
-    
-    return render(request, 'dashboards/student_dashboard.html', {'allocated_projects': allocated_projects,'accessible_resources': accessible_resources,'files_sent_to_mentor': files_sent_to_mentor,'form':form})
+
+    return render(
+        request,
+        'dashboards/student_dashboard.html',
+        {
+            'allocated_projects': allocated_projects,
+            'accessible_resources': accessible_resources,
+            'files_sent_to_mentor': files_sent_to_mentor,
+            'form': form,
+        },
+    )
 
 @login_required
 def mentor_dashboard(request):
     if request.user.role != 'mentor':
         return redirect('access_denied')  # Redirect unauthorized users
     projects = models.Project.objects.filter(mentor=request.user)
+    today = date.today()
+    upcoming_deadlines = projects.filter(due_date__range=(today, today + timedelta(days=7)))
     if request.method == 'POST':
         form = forms.ResourceForm(request.POST, request.FILES)
         if form.is_valid():
             resource = form.save(commit=False)
             resource.mentor = request.user  # Assign the logged-in mentor
-            resource.save()
-            form.save_m2m()  # Save Many-to-Many relationships
-            return redirect('mentor_dashboard')  # Refresh the page after upload
+            if not resource.mentor:
+                form.add_error(None, "A mentor must be assigned to this resource.")
+            else:
+                resource.save()
+                form.save_m2m()  # Save Many-to-Many relationships
+                return redirect('mentor_dashboard')  # Refresh the page after upload
     else:
         form = forms.ResourceForm()
+
+    calendar_events = [
+        {
+            "title": project.title,
+            "start": str(project.due_date),
+            "end": str(project.due_date),
+            "description": project.description,
+        }
+        for project in projects
+    ]
+
     project_data = []
     for project in projects:
         project.allocated_students = project.allocated_students()
@@ -134,13 +168,30 @@ def mentor_dashboard(request):
         project_data.append({
             'project': project,
             'title': project.title,
+            'upcoming_deadlines': upcoming_deadlines,
             'allocated_students': models.Project.allocated_students,
             'completion_percentage': completion_percentage,
+            'calendar_events': calendar_events,
         })
     uploaded_resources = models.Resource.objects.filter(mentor=request.user)
-    student_documents = models.Resource.objects.filter(mentor=request.user)
+    allocated_students = request.user.students.all()  # Assuming `students` is a reverse relation on mentor
+    student_documents = models.Resource.objects.filter(students__in=allocated_students).distinct()
     return render(request, 'dashboards/mentor_dashboard.html', {'project_data': project_data,'user': request.user,'form': form,
         'uploaded_resources': uploaded_resources,'student_documents': student_documents})
+
+@login_required
+def calendar_events_api(request):
+    projects = models.Project.objects.filter(mentor=request.user)
+    calendar_events = [
+        {
+            "title": project.title,
+            "start": str(project.due_date),
+            "end": str(project.due_date),
+            "description": project.description,
+        }
+        for project in projects
+    ]
+    return JsonResponse(calendar_events, safe=False)
 
 @login_required
 def admin_dashboard(request):
@@ -265,26 +316,62 @@ def create_update(request, phase_id):
         phase_form = forms.PhaseForm(request.POST, instance=phase)
         
         # Handle TaskFormset for adding or updating tasks
-        #task_formset = forms.TaskFormSet(request.POST)
+        task_formset = forms.TaskFormSet(request.POST)
         
-        if phase_form.is_valid():# and task_formset.is_valid():
-            # Save the updated phase
-            phase = phase_form.save(commit=False)
-            phase.save()
+        if phase_form.is_valid() and task_formset.is_valid():
+            with transaction.atomic():
+                # Save phase
+                phase_form.save()
 
-            # Save each task in the task formset and link it to the current phase
-            '''for task_form in task_formset:
-                task = task_form.save(commit=False)
-                task.phase = phase
-                task.save()'''
+                # Save tasks
+                tasks = task_formset.save(commit=False)
+                for task in tasks:
+                    task.phase = phase
+                    task.save()
 
-            # Redirect to project details after saving
+                # Delete tasks marked for deletion
+                for deleted_task in task_formset.deleted_objects:
+                    deleted_task.delete()
+
             return redirect('project_details', project_id=project.id)
+        else:
+            print("Phase Form Errors:", phase_form.errors)
+            print("Task Formset Errors:", task_formset.errors)
+        
     else:
         phase_form = forms.PhaseForm(instance=phase)
         task_formset = forms.TaskFormSet(queryset=models.Task.objects.filter(phase=phase))  # Get tasks associated with the phase
 
     return render(request, 'phases/create_update.html', {'phase_form': phase_form,'task_formset': task_formset,'phase': phase})
+
+@login_required
+def update_tasks(request, phase_id):
+    phase = get_object_or_404(models.Phases, id=phase_id)
+
+    # Initialize TaskFormSet with tasks linked to the phase
+    task_formset = forms.TaskFormSet(
+        request.POST or None, queryset=models.Task.objects.filter(phase=phase)
+    )
+
+    if request.method == "POST":
+        if task_formset.is_valid():
+            # Save updated tasks
+            tasks = task_formset.save(commit=False)
+            for task in tasks:
+                task.save()
+
+            # Handle deleted tasks if `can_delete=True`
+            for deleted_task in task_formset.deleted_objects:
+                deleted_task.delete()
+
+            return redirect('project_details', project_id=phase.project.id)
+        else:
+            print("Task Formset Errors:", task_formset.errors)
+
+    return render(request, 'projects/update_task.html', {
+        'task_formset': task_formset,
+        'phase': phase,
+    })
 
 @login_required
 def phase_details(request, phase_id):

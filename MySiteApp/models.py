@@ -1,4 +1,5 @@
 from django.contrib.auth.models import AbstractUser
+from django.core.exceptions import ValidationError
 from django.utils.timezone import now
 from django.db import models
 
@@ -53,7 +54,10 @@ class Project(models.Model):
             id__in=MentorStudentAllocation.objects.filter(mentor=self.mentor).values('student_id')
         )
 
-    
+    def is_deadline_upcoming(self, days=7):
+        """Check if the deadline is within the next `days` days."""
+        from datetime import date, timedelta
+        return date.today() <= self.due_date <= date.today() + timedelta(days=days)
     
     
     def completion_percentage(self):
@@ -134,7 +138,7 @@ class MentorStudentAllocation(models.Model):
     
 
 class Resource(models.Model):
-    mentor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='uploaded_resources')
+    mentor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='uploaded_resources',null=True,blank=True)
     title = models.CharField(max_length=255)
     file = models.FileField(upload_to='resources/')
     description = models.TextField(blank=True, null=True)
@@ -148,3 +152,8 @@ class Resource(models.Model):
         # Delete the file from storage when the Resource is deleted
         self.file.delete(save=False)
         super().delete(*args, **kwargs)
+
+    def save(self, *args, **kwargs):
+        if not self.mentor:
+            raise ValidationError("A mentor must be assigned to this resource.")
+        super().save(*args, **kwargs)

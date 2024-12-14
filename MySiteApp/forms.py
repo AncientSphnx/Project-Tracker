@@ -114,18 +114,24 @@ class PhaseForm(forms.ModelForm):
 class TaskForm(forms.ModelForm):
     class Meta:
         model = models.Task
-        fields = ['title', 'description', 'due_date', 'status']
+        fields = ['id','title', 'description', 'due_date', 'status']
         widgets = {
             'due_date': forms.DateInput(attrs={'type': 'date'}),
             'status': forms.Select(choices=[('pending', 'Pending'), ('completed', 'Completed')]),
         }
 
-TaskFormSet = modelformset_factory(models.Task, form=TaskForm, extra=1)
+TaskFormSet = modelformset_factory(models.Task, form=TaskForm, extra=1,can_delete=True,)
 
 class ResourceForm(forms.ModelForm):
     class Meta:
         model = models.Resource
-        fields = ['title', 'file', 'description', 'students']
+        fields = ['title', 'file', 'description','students']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['title'].widget.attrs.update({'class': 'form-input'})
+        self.fields['file'].widget.attrs.update({'class': 'form-input'})
+        self.fields['description'].widget.attrs.update({'class': 'form-input'})
 
 
 

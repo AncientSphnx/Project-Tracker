@@ -10,13 +10,13 @@
   <div class="flex min-h-screen">
     <!-- Sidebar -->
     <aside class="w-1/5 bg-blue-600 text-white p-6 rounded-lg border border-blue-5000">
-      <div class="text-2xl font-bold mb-10">📘 Mentor Panel</div>
+      <div class="text-2xl font-bold mb-10">📘 Guide Panel</div>
       <nav>
         <ul class="space-y-6">
           <li><a href="{% url 'mentor_dashboard' %}" class="text-white hover:text-gray-300 text-[30px]">Dashboard</a></li>
           <li><a href="{% url 'allocated_students' %}" class="text-white hover:text-gray-300 text-[30px]">Students</a></li>
           <li><a href="{% url 'mentor_student_projects' %}" class="text-white hover:text-gray-300 text-[30px]">Projects</a></li>
-          <li><a href="#" class="text-white hover:text-gray-300 text-[30px]">Settings</a></li>
+          
           <li><a href="{% url 'login' %}" class="text-white hover:text-gray-300 text-[30px]">Logout</a></li>
         </ul>
       </nav>
