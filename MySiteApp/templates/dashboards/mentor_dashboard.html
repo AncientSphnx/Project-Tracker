@@ -9,6 +9,26 @@
   <link rel="stylesheet" href="{% static 'css/style.css' %}"> <!-- Link to your provided CSS -->
   <script defer src="{% static 'js/script.js' %}"></script> <!-- Link to your provided JavaScript -->
   <style>
+    .row{
+      width:1000px;
+      padding-left: 10px;
+      padding-right: 10px;
+      border-top: 4px solid #d56ec7;
+      background: #ebecee;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.04);
+      border-radius: 5px;
+    }
+    .row h2{
+      font-size: 30px;
+    }
+    .row h3{
+      font-size: 25px;
+    }
+    .deadline{
+      padding-left: 10px;
+      height: 100px;
+      font-size: 25px;
+    }
     .button {
       display: inline-block;
       padding: 0rem 1.25rem;
@@ -110,7 +130,7 @@
     <main>
       <header>
         <h1 class="title">Guide Dashboard</h1>
-      </header>
+      </header><br>
 
       
 
@@ -149,8 +169,8 @@
           </div>
         </div>
 
-        <div class="col">
-          <h2><ul><b><i>Projects Overview</i></b></ul></h2><br>
+        <div class="row">
+          <h2><ul><b><i>Projects</i></b></ul></h2><br>
           <div class="p-6 bg-white rounded-lg shadow-md">
             {% for project in project_data %}
             <div class="item">
@@ -164,9 +184,9 @@
         </div>
         </div>
 
-        <div class="col">
+        <div class="row">
           <h2><ul><b><i>Upcoming Deadlines</i></b></ul></h2><br>
-          <div class="p-6 bg-white rounded-lg shadow-md">
+          <div class="deadline">
             {% if upcoming_deadlines %}
             <ul class="item">
               {% for project in upcoming_deadlines %}
