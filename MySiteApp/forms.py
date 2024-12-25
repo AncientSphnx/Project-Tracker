@@ -7,10 +7,12 @@ from . import models
 
 # Registration Form
 class RegistrationForm(UserCreationForm):
+    email = forms.EmailField(required=True, label="Email")  # Ensure email is mandatory
     password1 = forms.CharField(widget=forms.PasswordInput(), label="Password")
     password2 = forms.CharField(widget=forms.PasswordInput(), label="Confirm Password")
+
     class Meta:
-        model = models.User
+        model = models.User  # Ensure this is your custom User model or Django's auth.User
         fields = ['username', 'email', 'password1', 'password2']
 
     def clean(self):
@@ -18,34 +20,10 @@ class RegistrationForm(UserCreationForm):
         if cleaned_data.get('password1') != cleaned_data.get('password2'):
             raise forms.ValidationError("Passwords do not match.")
         return cleaned_data
-
-    '''def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['email'].required = True  # Ensure email is mandatory
-        #self.fields['role'].choices = User.ROLE_CHOICES  # Populate role choices dynamically
-        #self.fields['role'].initial = 'student'  # Default role to student
-
-    def clean_password2(self):
-        password1 = self.cleaned_data.get('password1')
-        password2 = self.cleaned_data.get('password2')
-        if password1 and password2 and password1 != password2:
-            raise forms.ValidationError("Passwords do not match.")
-        return password2
-
-    def save(self, commit=True):
-        user = super().save(commit=False)
-        if not self.cleaned_data.get('role'):
-            user.role = 'student'  # Default to student if role is not provided
-        if commit:
-            user.save()
-        return user'''
-
-
-# Login Form
+    
 class LoginForm(AuthenticationForm):
-    class Meta:
-        model = models.User
-        fields = ['username', 'password']
+    username = forms.CharField(required=True, label="Username")
+    password = forms.CharField(widget=forms.PasswordInput(), label="Password")
 
 class ProfileUpdateForm(forms.ModelForm):
     class Meta:

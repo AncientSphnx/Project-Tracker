@@ -1,80 +1,130 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  {% load static %}
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mentor Dashboard - Projects</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <title>Mentor Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.4/css/bulma.min.css">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <script defer src="{% static 'js/script.js' %}"></script>
+  <style>
+    .content-rows{
+      padding-left: 10px;
+      font-size: large;
+    }
+    .button {
+      display: inline-block;
+      padding: 0rem 1.25rem;
+      border-radius: 10rem;
+      background-color: transparent;
+      border: none;
+      cursor: pointer;
+      color: #fff;
+      text-transform: uppercase;
+      font-size: 1rem;
+      letter-spacing: 0.15rem;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+    }
+    .button:after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: black;
+      border-radius: 10rem;
+      z-index: -2;
+    }
+    .button:before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0%;
+      height: 100%;
+      background-color: white;
+      transition: all 0.3s;
+      border-radius: 10rem;
+      z-index: -1;
+    }
+    .button:hover {
+      color: black;
+    }
+    .button:hover:before {
+      width: 100%;
+    }
+    .underline-hover {
+      color: #0b121b;
+      text-decoration: none;
+      position: relative;
+      font-weight: bold;
+    }
+    .underline-hover::after {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 5px;
+      border-radius: 4px;
+      background: #4676cd;
+      left: 0;
+      bottom: -2px;
+      transition: width 0.3s ease;
+    }
+    .underline-hover:hover::after {
+      width: 100%;
+    }
+  </style>
 </head>
-<body class="bg-gray-100">
-  <div class="flex min-h-screen">
-    <!-- Sidebar -->
-    <aside class="w-1/5 bg-blue-600 text-white p-6 rounded-lg border border-blue-5000">
-      <div class="text-2xl font-bold mb-10">📘 Guide Panel</div>
-      <nav>
-        <ul class="space-y-6">
-          <li><a href="{% url 'mentor_dashboard' %}" class="text-white hover:text-gray-300 text-[30px]">Dashboard</a></li>
-          <li><a href="{% url 'allocated_students' %}" class="text-white hover:text-gray-300 text-[30px]">Students</a></li>
-          <li><a href="{% url 'mentor_student_projects' %}" class="text-white hover:text-gray-300 text-[30px]">Projects</a></li>
-          
-          <li><a href="{% url 'login' %}" class="text-white hover:text-gray-300 text-[30px]">Logout</a></li>
-        </ul>
-      </nav>
-    </aside>
+<body>
+<div class="site-wrap">
+  <!-- Sidebar -->
+  <nav class="site-nav">
+    <div class="name">Projects
+    </div>
+    <ul>
+      <li><a href="{% url 'mentor_dashboard' %}">Dashboard</a></li>
+      <li><a href="{% url 'allocated_students' %}">Students</a></li>
+      <li  class="active"><a href="{% url 'mentor_student_projects' %}">Projects</a></li>
+      <li><a href="{% url 'login' %}">Logout</a></li>
+    </ul>
+    <div class="note">
+      <h3>Welcome, Guide {{ user.username }}!</h3>
+      <p>Manage your projects and assist students.</p>
+    </div>
+  </nav>
 
-    <!-- Main Content -->
-    <main class="flex-1 p-8">
-      <!-- Header -->
-      <header>
-        <h1 class="text-3xl font-semibold">Welcome, Mentor {{ user.username }}👋</h1>
-        <p class="text-gray-600 mt-2">Here are the projects you're mentoring.</p>
-      </header>
-
-      <!-- Projects Overview -->
-      <section class="mt-10">
-        <h2 class="text-xl font-semibold mb-4">Projects Overview</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+  <!-- Main Content -->
+  <main>
+    <header>
+      <h1 class="title">Projects</h1>
+    </header>
+    <br>
+    <div class="content-rows">
+      <div class="row">
+        <div class="p-6 bg-white rounded-lg shadow-md">
           {% for project in student_projects %}
-          <div class="p-6 bg-white rounded-lg shadow-md">
-            <h3 class="text-lg font-semibold">{{ project.title }}</h3>
-            <p class="text-gray-600 mt-2">{{ project.description }}</p>
-            <p class="text-gray-600 mt-2">Start Date: {{ project.start_date }}</p>
-            <p class="text-gray-600 mt-2">Due Date: {{ project.due_date }}</p>
-            <p class="text-gray-600 mt-2">Completion: {{ project.completion_percentage|floatformat:0 }}%</p>
-            <a href="{% url 'project_detail_mentor' project.id %}" class="block mt-4 text-blue-600 hover:underline">View Details</a>
+          <div class="item">
+            <h3 class="title">{{ project.title }}</h3>
+            <p>{{ project.description }}</p>
+            <p>Start Date: {{ project.start_date }}</p>
+            <p>Due Date: {{ project.due_date }}</p>
+            <p>Completion: {{ project.completion_percentage }}%</p>
+            <a href="{% url 'project_detail_mentor' project.id %}" class="underline-hover">View Details</a>
           </div>
           {% empty %}
-          <p class="text-gray-600">You have no projects allocated to you.</p>
+          <p>No projects allocated to you yet.</p>
           {% endfor %}
         </div>
-      </section>
-    </main>
-  </div>
+      </div>
 
-  <!-- Chart.js for Mentoring Hours -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const ctx = document.getElementById('mentoringChart').getContext('2d');
-      new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-          datasets: [{
-            label: 'Hours Spent',
-            data: [2, 4, 3, 5, 6, 4, 3],
-            backgroundColor: '#60A5FA',
-            borderRadius: 5
-          }]
-        },
-        options: {
-          responsive: true,
-          scales: {
-            y: { beginAtZero: true }
-          }
-        }
-      });
-    });
-  </script>
+      
+    </div>
+  </main>
+</div>
 </body>
 </html>

@@ -1,82 +1,123 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Project Details</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.4/css/bulma.min.css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <script defer src="{% static 'js/script.js' %}"></script>
+    <style>
+    .content-section {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .content-section h2.subtitle {
+    font-size: 1.8rem;
+    margin-bottom: 15px;
+    }
+    .content-section p {
+    font-size: 1rem;
+    line-height: 1.6;
+    }
+    .card {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s;
+    }
+    .card:hover {
+    transform: translateY(-10px);
+    }
+    .card-content {
+    padding: 10px;
+    }
+    .phase-title {
+    font-size: 1.4rem;
+    color: black;
+    text-decoration: none;
+}
+
+.phase-title:hover {
+    text-decoration: underline;
+}
+.buttons .button {
+    border-radius: 10px;
+    margin-right: 10px;
+}
+.buttons .button:hover {
+    background:black;
+    color: white;
+}
+    </style>
 </head>
-<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+<body>
+<div class="site-wrap">
 
-<div class="flex w-full">
-    <!-- Sidebar -->
-    <div class="w-80 bg-purple-700 text-white p-8 min-h-screen rounded-lg border border-purple-5000">
-        <a href="{% url 'student_dashboard' %}"><div class="text-3xl font-bold mb-10">Dashboard</div></a>
-        <ul>
-            <li class="mb-6">
-                <a href="{% url 'all_projects' %}" class="text-white hover:text-gray-300">My Projects</a>
-            </li>
-            <li class="mb-6">
-                <a href="{% url 'progress_tracker' %}" class="text-white hover:text-gray-300">Progress Tracker</a>
-            </li>
-            <li class="mb-6">
-                <a href="{% url 'profile' %}" class="text-white hover:text-gray-300">Profile</a>
-            </li>
-            <li>
-                <a href="{% url 'login' %}" class="text-white hover:text-gray-300">Logout</a>
-            </li>
-        </ul>
+  <!-- Sidebar -->
+  <nav class="site-nav">
+    <div class="name">
     </div>
+    <ul>
+      <li><a href="{% url 'student_dashboard' %}">My Dashboard</a></li>
+      <li><a href="{% url 'progress_tracker' %}">Progress Tracker</a></li>
+      <li><a href="{% url 'all_projects' %}">All Projects</a></li>
+      <li><a href="{% url 'logout' %}">Logout</a></li>
+    </ul>
+  </nav>
 
-    <!-- Main Content -->
-    <div class="flex-1 p-10">
-        <!-- Project Title and Information -->
-        <div class="bg-white p-8 rounded-lg shadow-lg mb-6">
-            <h1 class="text-3xl font-semibold text-gray-900 mb-2">{{ project.title }}</h1>
-            <p class="text-gray-600 mb-4">{{ project.description }}</p>
-            <p class="text-gray-500 mb-2">Start Date: <span class="text-gray-900">{{ project.start_date }}</span></p>
-            <p class="text-gray-500">Due Date: <span class="text-gray-900">{{ project.due_date }}</span></p>
-        </div>
+  <!-- Main Content -->
+  <main>
+    <header>
+      <h1 class="title">Project Details</h1>
+    </header>
 
-        <!-- Phases List -->
-        <div class="bg-white p-8 rounded-lg shadow-lg mb-6">
-            <h2 class="text-2xl font-semibold text-gray-900 mb-4">Phases</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {% for phase in phases %}
-                    <div class="p-6 bg-white rounded-lg shadow-lg">
-                        <a href="{% url 'phase_details' phase.id %}" class="text-blue-500 hover:text-blue-700">
-                            {{ phase.title }}
-                        </a>
-                        <p class="text-gray-600 mt-2">{{ phase.description }}</p>
-                        <p class="text-gray-600 mt-2">Status: {{ phase.status }}</p>
-                        <p class="text-gray-600 mt-2">Due Date: {{ phase.due_date }}</p>
-                        <div class="mt-4 flex space-x-4">
-                            <a href="{% url 'create_update' phase.id %}" class="px-4 py-2 bg-yellow-500 text-white rounded-lg">Update Phase</a>
-                            <a href="{% url 'delete_phase' phase.id %}" class="px-4 py-2 bg-red-500 text-white rounded-lg">Delete Phase</a>
-                        </div>
-                        <!-- Update Task Section -->
-                        <div class="mt-4">
-                            <a href="{% url 'update_task' phase.id %}" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
-                                Update Tasks
-                            </a>
-                        </div>
-                    </div>
-                {% empty %}
-                    <p class="text-gray-500">No phases available for this project.</p>
-                {% endfor %}
+    <!-- Project Information -->
+    <section class="content-section">
+      <h2 class="subtitle">{{ project.title }}</h2>
+      <p>{{ project.description }}</p>
+      <p><strong>Start Date:</strong> {{ project.start_date }}</p>
+      <p><strong>Due Date:</strong> {{ project.due_date }}</p>
+    </section>
+
+    <!-- Phases Section -->
+    <section class="content-section">
+      <h2 class="subtitle">Phases</h2>
+      <div class="columns is-multiline">
+        {% for phase in phases %}
+        <div class="column is-one-third">
+          <div class="card">
+            <div class="card-content">
+              <a href="{% url 'phase_details' phase.id %}" class="phase-title">{{ phase.title }}</a>
+              <p>{{ phase.description }}</p>
+              <p><strong>Status:</strong> {{ phase.status }}</p>
+              <p><strong>Due Date:</strong> {{ phase.due_date }}</p>
+              <div class="buttons mt-3">
+                <a href="{% url 'create_update' phase.id %}" class="button">Update Phase</a>
+                <a href="{% url 'delete_phase' phase.id %}" class="button">Delete Phase</a>
+                <a href="{% url 'update_task' phase.id %}" class="button">Update Tasks</a>
+              </div>
             </div>
+          </div>
         </div>
+        {% empty %}
+        <p>No phases available for this project.</p>
+        {% endfor %}
+      </div>
+    </section>
 
-        <!-- Add Phase Button -->
-        <div class="text-center mt-8">
-            <a href="{% url 'create_phase' project.id %}">
-                <button class="px-6 py-3 bg-green-500 text-white text-lg font-semibold rounded-full shadow-lg hover:bg-green-600">
-                    Add Phase
-                </button>
-            </a>
-        </div>
-    </div>
+    <!-- Add Phase Button -->
+    <section class="text-center mt-5">
+      <center><a href="{% url 'create_phase' project.id %}">
+        <button class="btn">Add Phase</button>
+      </a></center>
+    </section>
+  </main>
 </div>
 
 </body>

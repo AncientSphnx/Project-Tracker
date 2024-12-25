@@ -1,97 +1,81 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Phase</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  {% load static %}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Phase</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.4/css/bulma.min.css">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}"> <!-- Link to your provided CSS -->
+  <script defer src="{% static 'js/script.js' %}"></script> <!-- Link to your provided JavaScript -->
 </head>
-<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+<body>
+<div class="site-wrap">
 
-<div class="flex w-full">
-    <!-- Sidebar -->
-    <div class="w-80 bg-purple-700 text-white p-8 min-h-screen rounded-lg border border-purple-5000">
-        <a href="{% url 'student_dashboard' %}"><div class="text-3xl font-bold mb-10">Dashboard</div></a>
-        <ul>
-            <li class="mb-6">
-                <a href="{% url 'all_projects' %}" class="text-white hover:text-gray-300">My Projects</a>
-            </li>
-            <li class="mb-6">
-                <a href="{% url 'progress_tracker' %}" class="text-white hover:text-gray-300">Progress Tracker</a>
-            </li>
-            <li class="mb-6">
-                <a href="{% url 'profile' %}" class="text-white hover:text-gray-300">Profile</a>
-            </li>
-            <li>
-                <a href="{% url 'login' %}" class="text-white hover:text-gray-300">Logout</a>
-            </li>
-        </ul>
+  <!-- Sidebar -->
+  <nav class="site-nav">
+    <div class="name">
     </div>
+    <ul>
+      <li><a href="{% url 'student_dashboard' %}">My Dashboard</a></li>
+      <li><a href="{% url 'progress_tracker' %}">Progress Tracker</a></li>
+      <li><a href="{% url 'all_projects' %}">All Projects</a></li>
+      <li><a href="{% url 'logout' %}">Logout</a></li>
+    </ul>
+    
+  </nav>
 
-    <!-- Main Content -->
-    <div class="flex-1 p-10">
-        <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md mx-auto">
-            <h1 class="text-2xl font-semibold text-gray-900 mb-6">Add Phase to "{{ project.title }}"</h1>
-            <form method="POST">
-                {% csrf_token %}
-                <div class="space-y-6">
-                    <!-- Phase Form -->
-                    <div>
-                        <h2 class="text-lg font-bold text-gray-800 mb-4">Phase Details</h2>
-                        <div class="space-y-2">
-                            <label for="id_title" class="block text-gray-700 font-medium">Title</label>
-                            {{ form.title }}
-                        </div>
-                        <div class="space-y-2">
-                            <label for="id_description" class="block text-gray-700 font-medium">Description</label>
-                            {{ form.description }}
-                        </div>
-                        <div class="space-y-2">
-                            <label for="id_due_date" class="block text-gray-700 font-medium">Due Date</label>
-                            {{ form.due_date }}
-                        </div>
-                        <div class="space-y-2">
-                            <label for="id_status" class="block text-gray-700 font-medium">Status</label>
-                            {{ form.status }}
-                        </div>
-                    </div>
+  <!-- Main Content -->
+  <main>
+    <header>
+      <h1 class="title">Add Phase to "{{ project.title }}"</h1>
+    </header>
 
-                    <!-- Task FormSet -->
-                    <!--<div>
-                        <h2 class="text-lg font-bold text-gray-800 mb-4">Task Details</h2>
-                        {{ task_formset.management_form }}
-                        {% for task_form in task_formset %}
-                        <div class="bg-gray-100 p-4 rounded-lg mb-4">
-                            <div class="space-y-2">
-                                <label for="id_title" class="block text-gray-700 font-medium">Task Title</label>
-                                {{ task_form.title }}
-                            </div>
-                            <div class="space-y-2">
-                                <label for="id_description" class="block text-gray-700 font-medium">Task Description</label>
-                                {{ task_form.description }}
-                            </div>
-                            <div class="space-y-2">
-                                <label for="id_due_date" class="block text-gray-700 font-medium">Task Due Date</label>
-                                {{ task_form.due_date }}
-                            </div>
-                            <div class="space-y-2">
-                                <label for="id_status" class="block text-gray-700 font-medium">Task Status</label>
-                                {{ task_form.status }}
-                            </div>
-                        </div>
-                        {% endfor %}
-                    </div>
-                </div>-->
+    <div class="content-section">
+      <form method="POST">
+        {% csrf_token %}
+        <div class="box">
+          <h2 class="subtitle">Phase Details</h2>
+          <div class="field">
+            <label for="id_title" class="label">Title</label>
+            <div class="control">
+              {{ form.title }}
+            </div>
+          </div>
 
-                <!-- Submit Button -->
-                <button type="submit" class="w-full py-2 mt-6 bg-green-500 text-white text-lg rounded-lg shadow-md hover:bg-green-600">
-                    Add Phase and Tasks
-                </button>
-            </form>
+          <div class="field">
+            <label for="id_description" class="label">Description</label>
+            <div class="control">
+              {{ form.description }}
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="id_due_date" class="label">Due Date</label>
+            <div class="control">
+              {{ form.due_date }}
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="id_status" class="label">Status</label>
+            <div class="control">
+              {{ form.status }}
+            </div>
+          </div>
         </div>
-    </div>
-</div>
 
+        <!-- Submit Button -->
+        <div class="field">
+          <div class="control">
+            <center><button type="submit" class="btn">
+              Add Phase
+            </button></center>
+          </div>
+        </div>
+      </form>
+    </div>
+  </main>
+</div>
 </body>
 </html>

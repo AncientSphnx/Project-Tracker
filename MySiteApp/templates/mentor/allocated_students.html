@@ -1,81 +1,136 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  {% load static %}
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Allocated Students</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.4/css/bulma.min.css">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <script defer src="{% static 'js/script.js' %}"></script>
+  <style>
+    
+
+    .row {
+      padding-left: 10px;
+      padding-top: 30px;
+      margin-bottom: 20px;
+    }
+
+    .row h2 {
+      margin-bottom: 10px;
+      font-weight: bold;
+      font-style: italic;
+    }
+
+    .row .content {
+      padding: 20px;
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    table th, table td {
+      border: 2px solid black;
+      padding: 8px;
+    }
+    .content table thead td, .content table thead th {
+        border-width: 0 0 2px;
+        color: white;
+    }
+    .head {
+      color: white !important;
+      font-size: 25px;
+      background-color: #0b121b;
+    }
+    table tbody {
+      font-size: 15px;
+    }
+    table tbody tr:nth-child(odd) {
+      background-color: #f9f9f9;
+    }
+
+    .notification {
+      padding: 10px;
+      background-color: #fffae6;
+      border: 1px solid #ffd87d;
+      border-radius: 4px;
+    }
+  </style>
 </head>
-<body class="bg-gray-100">
-  <div class="flex min-h-screen">
-    <!-- Sidebar -->
-    <aside class="w-1/5 bg-blue-600 text-white p-6 rounded-lg border border-blue-5000">
-      <div class="text-2xl font-bold mb-10">📘 Guide Panel</div>
-      <nav>
-        <ul class="space-y-6">
-          <li><a href="{% url 'mentor_dashboard' %}" class="text-white hover:text-gray-300 text-[30px]">Dashboard</a></li>
-          <li><a href="{% url 'allocated_students' %}" class="text-white hover:text-gray-300 text-[30px]">Students</a></li>
-          <li><a href="{% url 'mentor_student_projects' %}" class="text-white hover:text-gray-300 text-[30px]">Projects</a></li>
-          
-          <li><a href="{% url 'login' %}" class="text-white hover:text-gray-300 text-[30px]">Logout</a></li>
-        </ul>
-      </nav>
-    </aside>
+<body>
 
-    <!-- Main Content -->
-    <main class="flex-1 p-8">
-      <!-- Header -->
-      <header>
-        <h1 class="text-3xl font-semibold">Allocated Students</h1>
-        <p class="text-gray-600 mt-2">Students you are mentoring are listed below.</p>
-      </header>
+<div class="site-wrap">
+  <!-- Sidebar -->
+  <nav class="site-nav">
+    <div class="name">
+      Allocated Students
+      <svg width="24" height="24" viewBox="0 0 24 24">
+        <path d="M11.5,22C11.64,22 11.77,22 11.9,21.96C12.55,21.82 13.09,21.38 13.34,20.78C13.44,20.54 13.5,20.27 13.5,20H9.5A2,2 0 0,0 11.5,22M18,10.5C18,7.43 15.86,4.86 13,4.18V3.5A1.5,1.5 0 0,0 11.5,2A1.5,1.5 0 0,0 10,3.5V4.18C7.13,4.86 5,7.43 5,10.5V16L3,18V19H20V18L18,16M19.97,10H21.97C21.82,6.79 20.24,3.97 17.85,2.15L16.42,3.58C18.46,5 19.82,7.35 19.97,10M6.58,3.58L5.15,2.15C2.76,3.97 1.18,6.79 1,10H3C3.18,7.35 4.54,5 6.58,3.58Z"></path>
+      </svg>
+    </div>
+    <ul>
+      <li><a href="{% url 'mentor_dashboard' %}">Dashboard</a></li>
+      <li class="active"><a href="{% url 'allocated_students' %}">Students</a></li>
+      <li><a href="{% url 'mentor_student_projects' %}">Projects</a></li>
+      <li><a href="{% url 'login' %}">Logout</a></li>
+    </ul>
+    <div class="note">
+      <h3>Welcome, Guide {{ user.username }}!</h3>
+      <p>View and manage your allocated students here.</p>
+    </div>
+  </nav>
 
-      <!-- Allocated Students Table -->
-      <section class="mt-10">
-        <div class="p-6 bg-white rounded-lg shadow-md">
-          {% if students %}
-          <table class="min-w-full border-collapse border border-gray-300">
-            <thead class="bg-blue-600 text-white">
-              <tr>
-                <th class="border border-gray-300 px-4 py-2">#</th>
-                <!--<th class="border border-gray-300 px-4 py-2">Profile Picture</th>-->
-                <th class="border border-gray-300 px-4 py-2">Name</th>
-                <th class="border border-gray-300 px-4 py-2">Email</th>
-                <th class="border border-gray-300 px-4 py-2">Assigned Projects</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for student in students %}
-              <tr class="bg-gray-50 hover:bg-gray-100">
-                <td class="border border-gray-300 px-4 py-2 text-center">{{ forloop.counter }}</td>
-                <!--<td class="border border-gray-300 px-4 py-2 text-center">
-                  {% if student.profile_picture %}
-                  <img src="{{ student.profile_picture.url }}" alt="{{ student.username }}" class="rounded-full h-12 w-12">
-                  {% else %}
-                  <img src="" alt="Default Profile Picture" class="rounded-full h-12 w-12">
-                  {% endif %}
-                </td>-->
-                <td class="border border-gray-300 px-4 py-2">{{ student.username }}</td>
-                <td class="border border-gray-300 px-4 py-2">{{ student.email }}</td>
-                <td class="border border-gray-300 px-4 py-2">
-                  <ul class="list-disc ml-4">
-                    {% for project in student.assigned_projects.all %}
-                    <li>{{ project.title }}</li>
-                    {% endfor %}
-                  </ul>
-                </td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-          {% else %}
-          <div class="alert alert-warning bg-yellow-100 text-yellow-800 p-4 rounded-md">
-            <p>No students have been allocated to you yet.</p>
-          </div>
-          {% endif %}
+  <!-- Main Content -->
+  <main>
+    <header>
+      <h1 class="title">Allocated Students</h1>
+    </header>
+
+    <div class="row">
+      <div class="content">
+        {% if students %}
+        <table>
+          <thead class="head">
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Assigned Projects</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for student in students %}
+            <tr>
+              <td>{{ forloop.counter }}</td>
+              <td>{{ student.username }}</td>
+              <td>{{ student.email }}</td>
+              <td>
+                <ul style="list-style: none; padding: 0; margin: 0;">
+                  {% for project in student.assigned_projects.all %}
+                  <li>{{ project.title }}</li>
+                  {% endfor %}
+                </ul>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <div class="notification">
+          No students have been allocated to you yet.
         </div>
-      </section>
-    </main>
-  </div>
+        {% endif %}
+      </div>
+    </div>
+  </main>
+</div>
+
 </body>
 </html>

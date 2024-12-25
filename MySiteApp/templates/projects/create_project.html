@@ -1,67 +1,82 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create New Project</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  {% load static %}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create New Project</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.4/css/bulma.min.css">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}"> <!-- Link to your provided CSS -->
+  <script defer src="{% static 'js/script.js' %}"></script> <!-- Link to your provided JavaScript -->
 </head>
-<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+<body>
 
-<div class="flex w-full">
-    <!-- Sidebar -->
-    <div class="w-80 bg-purple-700 text-white p-8 min-h-screen rounded-lg border border-purple-5000">
-        <a href="{% url 'student_dashboard' %}"><div class="text-3xl font-bold mb-10">Dashboard</div></a>
-        <ul>
-            <li class="mb-6">
-                <a href="#" class="text-white hover:text-gray-300">My Projects</a>
-            </li>
-            <li class="mb-6">
-                <a href="#" class="text-white hover:text-gray-300">Progress Tracker</a>
-            </li>
-            <li class="mb-6">
-                <a href="{% url 'profile' %}" class="text-white hover:text-gray-300">Profile</a>
-            </li>
-            <li>
-                <a href="{% url 'login' %}" class="text-white hover:text-gray-300">Logout</a>
-            </li>
-        </ul>
+<div class="site-wrap">
+
+  <!-- Sidebar -->
+  <nav class="site-nav">
+    <div class="name">
     </div>
+    <ul>
+      <li class="active"><a href="{% url 'student_dashboard' %}">My Dashboard</a></li>
+      <li><a href="{% url 'progress_tracker' %}">Progress Tracker</a></li>
+      <li><a href="{% url 'all_projects' %}">All Projects</a></li>
+      <li><a href="{% url 'logout' %}">Logout</a></li>
+    </ul>
+  </nav>
 
-    <!-- Main Content -->
-    <div class="flex-1 p-10">
-        <div class="flex justify-between items-center mb-6">
-            <div>
-                <div class="text-2xl font-semibold text-gray-900">Create a New Project</div>
-                <div class="text-gray-500">Please fill in the details of your new project below.</div>
+  <!-- Main Content -->
+  <main>
+    <header>
+      <h1 class="title">Create New Project</h1>
+    </header>
+
+    <!-- Create Project Form -->
+    <section class="section">
+      <div class="container">
+        <div class="box">
+          <form method="POST">
+            {% csrf_token %}
+            <div class="field">
+              <label for="title" class="label">Project Title</label>
+              <div class="control">
+                {{ form.title }}
+              </div>
             </div>
-        </div>
 
-        <!-- Create Project Form -->
-        <div class="bg-white p-8 rounded-lg shadow-lg">
-            <form method="POST">
-                {% csrf_token %}
-                <div class="mb-4">
-                    <label for="title" class="block text-gray-700 font-semibold">Project Title</label>
-                    {{ form.title }}
-                </div>
-                <div class="mb-4">
-                    <label for="description" class="block text-gray-700 font-semibold">Project Description</label>
-                    {{ form.description }}
-                </div>
-                <div class="mb-4">
-                    <label for="start_date" class="block text-gray-700 font-semibold">Start Date</label>
-                    {{ form.start_date }}
-                </div>
-                <div class="mb-4">
-                    <label for="due_date" class="block text-gray-700 font-semibold">Due Date</label>
-                    {{ form.due_date }}
-                </div>
-                <button type="submit" class="w-full py-2 bg-green-500 text-white font-semibold rounded-lg shadow-md hover:bg-green-600">Create Project</button>
-            </form>
+            <div class="field">
+              <label for="description" class="label">Project Description</label>
+              <div class="control">
+                {{ form.description }}
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="start_date" class="label">Start Date</label>
+              <div class="control">
+                {{ form.start_date }}
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="due_date" class="label">Due Date</label>
+              <div class="control">
+                {{ form.due_date }}
+              </div>
+            </div>
+
+            <div class="field is-grouped">
+              <div class="control">
+                <button type="submit" class="button is-primary is-fullwidth">
+                  Create Project
+                </button>
+              </div>
+            </div>
+          </form>
         </div>
-    </div>
+      </div>
+    </section>
+  </main>
 </div>
 
 </body>

@@ -1,127 +1,183 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Dashboard</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-        
-        .card {
-            background: #ffffff;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            border-radius: 16px;
-            padding: 1rem;
-            margin-bottom: 1.5rem;
-        }
-    </style>
+  {% load static %}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.4/css/bulma.min.css">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}"> <!-- Link to your provided CSS -->
+  <script defer src="{% static 'js/script.js' %}"></script> <!-- Link to your provided JavaScript -->
+  <style>
+    .button {
+  display: inline-block;
+  padding: 0rem 1.25rem;
+  border-radius: 10rem;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  color: #fff;
+  text-transform: uppercase;
+  font-size: 1rem;
+  letter-spacing: 0.15rem;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.button:after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: black; /* Replace SCSS variable */
+  border-radius: 10rem;
+  z-index: -2;
+}
+
+.button:before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0%;
+  height: 100%;
+  background-color: white; /* Replace with darkened color */
+  transition: all 0.3s;
+  border-radius: 10rem;
+  z-index: -1;
+}
+
+.button:hover {
+  color: black;
+}
+
+.button:hover:before {
+  width: 100%;
+}
+.underline-hover {
+    color: #0b121b;
+    text-decoration: none;
+    position: relative;
+    font-weight: bold;
+}
+
+.underline-hover::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 5px;
+    border-radius: 4px;
+    background: #4676cd;
+    left: 0;
+    bottom: -2px;
+    transition: width 0.3s ease;
+}
+
+.underline-hover:hover::after {
+    width: 100%;
+}
+  </style>
 </head>
-<body class="bg-gray-100 min-h-screen">
+<body>
+<div class="site-wrap">
 
-<div class="flex">
-    <!-- Sidebar -->
-    <div class="w-80 bg-purple-700 text-white p-8 min-h-screen rounded-lg border border-purple-5000">
-        <a href="{% url 'student_dashboard' %}"><div class="text-3xl font-bold mb-10">Dashboard</div></a>
-        <ul>
-            <li class="mb-6">
-                <a href="{% url 'all_projects' %}" class="text-white hover:text-gray-300">My Projects</a>
-            </li>
-            <li class="mb-6">
-                <a href="{% url 'progress_tracker' %}" class="text-white hover:text-gray-300">Progress Tracker</a>
-            </li>
-            <li class="mb-6">
-                <a href="{% url 'profile' %}" class="text-white hover:text-gray-300">Profile</a>
-            </li>
-            <li>
-                <a href="{% url 'login' %}" class="text-white hover:text-gray-300">Logout</a>
-            </li>
-        </ul>
+  <!-- Sidebar -->
+  <nav class="site-nav">
+    <div class="name">
+      Dashboard
+      <svg width="24" height="24" viewBox="0 0 24 24">
+        <path d="M11.5,22C11.64,22 11.77,22 11.9,21.96C12.55,21.82 13.09,21.38 13.34,20.78C13.44,20.54 13.5,20.27 13.5,20H9.5A2,2 0 0,0 11.5,22M18,10.5C18,7.43 15.86,4.86 13,4.18V3.5A1.5,1.5 0 0,0 11.5,2A1.5,1.5 0 0,0 10,3.5V4.18C7.13,4.86 5,7.43 5,10.5V16L3,18V19H20V18L18,16M19.97,10H21.97C21.82,6.79 20.24,3.97 17.85,2.15L16.42,3.58C18.46,5 19.82,7.35 19.97,10M6.58,3.58L5.15,2.15C2.76,3.97 1.18,6.79 1,10H3C3.18,7.35 4.54,5 6.58,3.58Z"></path>
+      </svg>
     </div>
+    <ul>
+      <li class="active"><a href="{% url 'student_dashboard' %}">My Dashboard</a></li>
+      <li><a href="{% url 'progress_tracker' %}">Progress Tracker</a></li>
+      <li><a href="{% url 'all_projects' %}">All Projects</a></li>
+      <li><a href="{% url 'logout' %}">Logout</a></li>
+    </ul>
+    <div class="note">
+      <h3>Welcome, {{ user.username }}!</h3>
+      <p>Here’s a quick overview of your progress and tasks.</p>
+    </div>
+  </nav>
 
-    <!-- Main Content -->
-    <div class="flex-1 p-10">
-        <!-- Welcome message and student info -->
-        <div class="flex justify-between items-center mb-6">
-            <div>
-                <div class="text-2xl font-semibold text-gray-900">Hello, {{ user.username }} 👋</div>
-                <div class="text-gray-500">Welcome back, continue working on your projects!</div>
-            </div>
-            <div class="p-6 inline-flex bg-white rounded-lg shadow-lg">
-                <div class="p-2">
-                    <img src="{% if user.profile_picture %}{{ user.profile_picture.url }}{% else %}https://placehold.co/100x100.png{% endif %}" alt="Profile image of {{ user.username }}" 
-                    class="w-20 h-20 rounded-full object-cover border border-gray-200 shadow-md">
-                </div>
-                <div class="pl-5">
-                    <div class="font-semibold text-lg">{{ user.username }}</div>
-                    <div class="text-sm text-gray-600">Location: SHIVAMOGGA, INDIA</div>
-                </div>
-            </div>
+  <!-- Main Content -->
+  <main>
+    <header>
+      
+      <h1 class="title">Student Dashboard</h1>
+      <nav class="nav-tabs" id="nav-tabs">
+        <a href="{% url 'all_projects' %}">All Project <span>{{ allocated_projects|length }}</span></a>
+        <a href="{% url 'progress_tracker' %}">Progress Tracker <span>2</span></a>
+        <!--<a href="{% url 'all_projects' %}">All Projects</a>-->
+      </nav>
+    </header>
+    <div class="mt-8 text-center">
+        <center><a href="{% url 'create_project' %}">
+          <button class="btn">
+            Create New Project
+          </button></center>
+        </a>
+    </div><br>
+      
+
+    <!-- Projects Section -->
+    <div class="content-columns">
+      <div class="col">
+        <h2><ul><b><i>Projects</i></b></ul></h2><br>
+        {% for project in allocated_projects %}
+        <div class="item">
+          <h3>{{ project.title }}</h3>
+          
+          <a href="{% url 'project_details' project.id %}" class="underline-hover">View Details</a>
         </div>
+        {% empty %}
+        <p>No projects yet.</p>
+        {% endfor %}
+      </div>
 
-        <section class="mt-10">
-            <h2 class="text-xl font-semibold mb-6">📚 Resources Shared by Your Mentor</h2>
+      <div class="col">
+        <h2><ul><b><i>📚 Resources Shared by Your Guide</i></b></ul></h2><br>
             <div class="p-6 bg-white rounded-lg shadow-md">
-                <h3 class="text-lg font-semibold">Your Resources</h3>
-                <ul class="mt-4 space-y-3">
+                <ul class="item">
                     {% for resource in user.accessible_resources.all %}
-                        <li class="flex justify-between items-center">
-                            <a href="{{ resource.file.url }}" class="text-blue-600 underline" download>
-                                {{ resource.title }}
-                            </a>
-                            <form action="{% url 'delete_resource' resource.id %}" method="POST" class="ml-4">
+                        <li>
+                            <a href="{{ resource.file.url }}" class="underline-hover" download>
+                              {{ resource.title }}
+                            </a><br><br>
+                            <form action="{% url 'delete_resource' resource.id %}" method="POST">
                                 {% csrf_token %}
-                                <button type="submit" class="px-4 py-2 bg-red-600 text-white text-xs rounded-full">
+                                <button type="submit" class="button">
                                     Delete
                                 </button>
-                            </form>
+                            </form><br>
                         </li>
                     {% empty %}
                         <p class="text-gray-600">No resources available.</p>
                     {% endfor %}
                 </ul>
             </div>
-        </section><br>
-        
 
-        <!-- Project Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {% for project in allocated_projects %}
-                <div class="card">
-                    <div class="flex justify-between items-center mb-4">
-                        <div class="font-bold text-lg">{{ project.title }}</div>
-                        <div class="text-sm text-gray-600">Start: {{ project.start_date }}</div>
-                        <div class="text-sm text-gray-600">Due: {{ project.due_date }}</div>
-                    </div>
-                    <div class="mb-4">
-                        <p class="text-gray-600">Milestones: {{ project.phases.count }} phases</p>
-                        <p class="text-gray-600">Tasks: {{ project.phases.all|length }} tasks</p>
-                    </div>
-                    <div class="flex justify-between">
-                        <a href="{% url 'project_details' project_id=project.id %}"><button class="px-4 py-2 bg-blue-500 text-white text-xs rounded-full">View Details</button></a> 
-                        
-                        <a href="{% url 'delete_project' project_id=project.id %}"><button class="px-4 py-2 bg-red-500 text-white text-xs rounded-full">Delete</button></a>
-                    </div>
-                </div>
-            {% empty %}
-                <!--<p>No projects yet. Create a new project!</p>-->
-            {% endfor %}
+      </div>
+
+      <div class="col">
+        <h2>Upcoming Milestones</h2>
+        {% for milestone in upcoming_milestones %}
+        <div class="item">
+          <h3>{{ milestone.title }}</h3>
+          <p>Project: {{ milestone.project.title }}</p>
+          <p>Due: {{ milestone.due_date }}</p>
         </div>
-
-
-        <!-- Project Creation Button -->
-        <!--<div class="mt-8 text-center">
-            <a href="{% url 'create_project' %}">
-                <button class="px-6 py-3 bg-green-500 text-white text-lg font-semibold rounded-full shadow-lg hover:bg-green-600">
-                    Create New Project
-                </button>
-            </a>-->
-        </div>
+        {% empty %}
+        <p>No milestones yet.</p>
+        {% endfor %}
+      </div>
     </div>
+  </main>
 </div>
-
 </body>
 </html>

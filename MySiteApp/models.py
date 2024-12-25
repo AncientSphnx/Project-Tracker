@@ -10,7 +10,7 @@ class User(AbstractUser):
         ('mentor', 'Mentor'),
         ('admin', 'Admin'),
     ]
-    role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='student')
+    role = models.CharField(max_length=10, choices=ROLE_CHOICES,)
     id = models.AutoField(primary_key=True)
     profile_picture = models.ImageField(upload_to='profile_pictures/', null=True, blank=True)
     mentor = models.ForeignKey(

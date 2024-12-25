@@ -11,64 +11,55 @@ from . import forms
 from . import models
 
 # Registration View
-def register_view(request):
+
+
+def login_register_view(request):
+    login_form = forms.LoginForm()
+    registration_form = forms.RegistrationForm()
+
     if request.method == 'POST':
-        print(request.POST)
-        form = forms.RegistrationForm(request.POST)
-        if form.is_valid():
-            # Save the user with a hashed password
-            user = form.save(commit=False)
-            #if not user.role:
-            #    user.role = 'student'
-            user.save()
-
-            # Authenticate and log in the user
-            authenticated_user = authenticate(
-                username=user.username,
-                password=form.cleaned_data['password1']
-            )
-            if authenticated_user:
-                login(request, authenticated_user)
-                messages.success(request, "Registration successful!")
-                return redirect('login')  # Redirect to a suitable page
-            else:
-                messages.error(request, "Error during login. Please try again.")
-        else:
-            print("Form is invalid!")  # This will print if the form is invalid
-            print(form.errors)  # Print form errors to see why it failed
-            messages.error(request, "Registration failed. Please check the details.")
-    else:
-        form = forms.RegistrationForm()
-
-    return render(request, 'register.html', {'form': form})
-
-# Login View
-def login_view(request):
-    if request.method == 'POST':
-        form = forms.LoginForm(data=request.POST)
-        if form.is_valid():
-            user = authenticate(
-                request,
-                username=form.cleaned_data['username'],
-                password=form.cleaned_data['password'],
-            )
-            if user:
-                login(request, user)
-                messages.success(request, f"Welcome, {user.username}!")
-                # Redirect to role-based dashboard
-                if user.role == 'student':
-                    return redirect('student_dashboard')
-                elif user.role == 'mentor':
-                    return redirect('mentor_dashboard')
-                elif user.role == 'admin':
-                    return redirect('/admin/')
+        if 'login' in request.POST:
+            login_form = forms.LoginForm(data=request.POST)
+            if login_form.is_valid():
+                user = authenticate(
+                    request,
+                    username=login_form.cleaned_data['username'],
+                    password=login_form.cleaned_data['password'],
+                )
+                if user:
+                    login(request, user)  # Ensure login() gets a valid user object
+                    messages.success(request, f"Welcome, {user.username}!")
+                    if user.role == 'student':
+                        return redirect('student_dashboard')
+                    elif user.role == 'mentor':
+                        return redirect('mentor_dashboard')
+                    elif user.role == 'admin':
+                        return redirect('/admin/')
                 else:
-                    messages.error(request, "Unauthorized role!")
-                    return redirect('login')
-        messages.error(request, "Invalid credentials. Please try again.")
-    else:
-        form = forms.LoginForm()
-    return render(request, 'login.html', {'form': form})
+                    messages.error(request, "Invalid username or password. Please try again.")
+        elif 'register' in request.POST:
+            registration_form = forms.RegistrationForm(request.POST)
+            if registration_form.is_valid():
+                user = registration_form.save()
+                authenticated_user = authenticate(
+                    username=user.username,
+                    password=registration_form.cleaned_data['password1'],
+                )
+                if authenticated_user:
+                    login(request, authenticated_user)  # Ensure login() gets a valid user object
+                    messages.success(request, "Registration successful!")
+                    return redirect('student_dashboard')  # Adjust based on your routes
+                else:
+                    messages.error(request, "Error during login after registration.")
+            else:
+                messages.error(request, "Registration failed. Please check the details.")
+
+    return render(request, 'login.html', {
+        'login_form': login_form,
+        'registration_form': registration_form,
+    })
+
+
 
 
 # Logout View
@@ -76,30 +67,11 @@ def logout_view(request):
     logout(request)
     messages.success(request, "Logged out successfully!")
     return redirect('login')
-
-# Dashboard View (Role-Based Access)
-"""@login_required
-def dashboard_view(request):
-    if request.user.role == 'student':
-        return render(request, 'student_dashboard.html')
-    elif request.user.role == 'mentor':
-        return render(request, 'mentor_dashboard.html')
-    elif request.user.role == 'admin':
-        return render(request, 'admin_dashboard.html')
-    else:
-        messages.error(request, "Unauthorized access!")
-        return redirect('login')"""
     
 @login_required
 def student_dashboard(request):
     if request.user.role != 'student':
         return redirect('access_denied')  # Redirect unauthorized users
-
-    # Fetch allocated mentor for the student
-    '''mentor = getattr(request.user, 'mentor', None)
-    if not mentor:
-        messages.error(request, "You are not assigned to a mentor.")
-        return redirect('profile')  # Redirect to profile or an error page'''
     mentor = request.user.mentor
     # Fetch related data
     accessible_resources = models.Resource.objects.filter(students=request.user)
@@ -174,10 +146,12 @@ def mentor_dashboard(request):
             'calendar_events': calendar_events,
         })
     uploaded_resources = models.Resource.objects.filter(mentor=request.user)
-    allocated_students = request.user.students.all()  # Assuming `students` is a reverse relation on mentor
+    allocated_students = models.User.objects.filter(
+        id__in=models.MentorStudentAllocation.objects.filter(mentor=request.user).values('student_id')
+    )  # Assuming `students` is a reverse relation on mentor
     student_documents = models.Resource.objects.filter(students__in=allocated_students).distinct()
     return render(request, 'dashboards/mentor_dashboard.html', {'project_data': project_data,'user': request.user,'form': form,
-        'uploaded_resources': uploaded_resources,'student_documents': student_documents})
+        'uploaded_resources': uploaded_resources,'student_documents': student_documents,'allocated_students':allocated_students})
 
 @login_required
 def calendar_events_api(request):
@@ -240,26 +214,15 @@ def delete_project(request, project_id):
         return redirect('all_projects')  # Redirect to the list of all projects
     return render(request, 'projects/confirm_delete.html', {'project': project})
 
-
-
 @login_required
 def project_details(request, project_id):
     project = get_object_or_404(models.Project, id=project_id)
     phases = project.phases.all()
     return render(request, 'projects/project_details.html', {'project': project, 'phases': phases})
 
-
 @login_required
 def create_phase(request, project_id):
     project = get_object_or_404(models.Project, id=project_id)
-    '''TaskFormSet = inlineformset_factory(
-        models.Phases,  # Parent model
-        models.Task,    # Related model
-        fields=('title', 'description', 'due_date', 'status'),  # Fields to include in the formset
-        extra=1,  # Number of empty forms to display
-        can_delete=True,  # Allow task deletion
-    )'''
-
     if request.method == "POST":
         form = forms.PhaseForm(request.POST)
         #task_formset = forms.TaskFormSet(request.POST)
@@ -267,44 +230,12 @@ def create_phase(request, project_id):
             phase = form.save(commit=False)
             phase.project = project
             phase.save()
-            '''tasks = task_formset.save(commit=False)
-            for task in tasks:
-                task.phase = phase  # Link task to the phase
-                task.save()
-            task_formset.save_m2m()  # Save any many-to-many relationships'''
-
             messages.success(request, "Phase and tasks created successfully!")
             return redirect('project_details', project_id=project_id)
     else:
         form = forms.PhaseForm()
         #task_formset = TaskFormSet()
     return render(request, 'phases/create_phase.html', {'form': form,'project': project})#'task_formset': task_formset, 
-
-
-
-'''@login_required
-def create_task(request, phase_id):
-    # Get the phase to which the task will be added
-    phase = get_object_or_404(models.Phases, id=phase_id)
-    
-    if request.method == "POST":
-        # Bind the form with data from the request
-        form = models.TaskForm(request.POST)
-        
-        if form.is_valid():
-            # Create a new task but link it to the current phase
-            task = form.save(commit=False)
-            task.phase = phase  # Link the task to the current phase
-            task.save()
-            
-            # Redirect to the phase details page after task is added
-            return redirect('phase_details', phase_id=phase.id)  # Update this to your phase detail view name
-    else:
-        # Initialize the form if it's a GET request
-        form = models.TaskForm()
-
-    return render(request, 'projects/create_task.html', {'form': form, 'phase': phase})'''
-
 
 @login_required
 def create_update(request, phase_id):
@@ -421,8 +352,6 @@ def progress_tracker(request):
 
     return render(request, 'progress_tracker.html', {'projects': projects})
 
-
-
 @login_required
 def allocated_students_view(request):
     # Ensure the user is a mentor
@@ -440,7 +369,6 @@ def allocated_students_view(request):
     return render(request, 'mentor/allocated_students.html', {
         'students': allocated_students,
     })
-
 
 @login_required
 def mentor_student_projects(request):
@@ -522,32 +450,5 @@ def delete_resource(request, resource_id):
     else:
         return HttpResponseForbidden("You don't have permission to delete this resource.")
 
-
 def index(request):
      return render(request, 'index.html')
-
-"""def user_form_view(request):
-    if request.method == 'POST':
-        form = UserForm(request.POST)
-        if form.is_valid():
-            # Process the form data
-            
-            user = User1(
-                name=form.cleaned_data['name'],
-                email=form.cleaned_data['email'],
-                role=form.cleaned_data['role']
-            )
-            user.save()
-            
-            # Here you can save data to the database or perform other actions
-            #return HttpResponse(f"Thank you, {user.name}. Your information has been submitted!")
-            return redirect('index')
-        
-    else:
-        form = UserForm()
-
-    return render(request, 'user_form.html', {'form': form})
-
-def user_list_view(request):
-    users = User1.objects.all()  # Get all user records from the User table
-    return render(request, 'user_list.html', {'users': users})"""

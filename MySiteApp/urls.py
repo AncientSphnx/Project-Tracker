@@ -3,8 +3,7 @@ from django.contrib import admin
 from . import views
 
 urlpatterns = [
-    path('', views.login_view, name='login'),
-    path('register/', views.register_view, name='register'),
+    path('', views.login_register_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
     path('student/dashboard/', views.student_dashboard, name='student_dashboard'),
     path('mentor/dashboard/', views.mentor_dashboard, name='mentor_dashboard'),
@@ -18,7 +17,6 @@ urlpatterns = [
     path('projects/<int:project_id>/phases/new/', views.create_phase, name='create_phase'),
     path('phases/<int:phase_id>/updates/', views.create_update, name='create_update'),
     path('phases/<int:phase_id>/delete/', views.delete_phase, name='delete_phase'),
-    #path('admin/', admin.site.urls, name='admin_dashboard'),
     path('access-denied/', views.access_denied, name='access_denied'),
     path('allocated/', views.allocated_students_view, name='allocated_students'),
     path('mentor/projects/', views.mentor_student_projects, name='mentor_student_projects'),

@@ -1,137 +1,189 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  {% load static %}
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mentor Dashboard</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.4/css/bulma.min.css">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}"> <!-- Link to your provided CSS -->
+  <script defer src="{% static 'js/script.js' %}"></script> <!-- Link to your provided JavaScript -->
   <style>
-    .calendar {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 1rem;
-      text-align: center;
-    }
-    .calendar .day {
-      padding: 1rem;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    .calendar .day:hover {
-      background-color: #d1d5db;
-    }
-    .calendar .event {
+    .button {
       display: inline-block;
-      margin-top: 0.5rem;
-      padding: 0.2rem 0.5rem;
-      background-color: #34d399;
-      color: white;
+      padding: 0rem 1.25rem;
+      border-radius: 10rem;
+      background-color: transparent;
+      border: none;
+      cursor: pointer;
+      color: #fff;
+      text-transform: uppercase;
+      font-size: 1rem;
+      letter-spacing: 0.15rem;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .button:after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: black;
+      border-radius: 10rem;
+      z-index: -2;
+    }
+
+    .button:before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0%;
+      height: 100%;
+      background-color: white;
+      transition: all 0.3s;
+      border-radius: 10rem;
+      z-index: -1;
+    }
+
+    .button:hover {
+      color: black;
+    }
+
+    .button:hover:before {
+      width: 100%;
+    }
+
+    .underline-hover {
+      color: #0b121b;
+      text-decoration: none;
+      position: relative;
+      font-weight: bold;
+    }
+
+    .underline-hover::after {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 5px;
       border-radius: 4px;
+      background: #4676cd;
+      left: 0;
+      bottom: -2px;
+      transition: width 0.3s ease;
     }
-    .flex-container {
-      display: flex;
-      justify-content: space-between;
-      gap: 2rem;
-    }
-    .flex-item {
-      flex: 1;
+
+    .underline-hover:hover::after {
+      width: 100%;
     }
   </style>
 </head>
-<body class="bg-gray-100">
-  <div class="flex min-h-screen">
+<body>
+
+  <div class="site-wrap">
     <!-- Sidebar -->
-    <aside class="w-1/5 bg-blue-600 text-white p-6 rounded-lg border border-blue-5000">
-      <div class="text-2xl font-bold mb-10">📘 Guide Panel</div>
-      <nav>
-        <ul class="space-y-6">
-          <li><a href="#" class="text-white hover:text-gray-300 text-[30px]">Dashboard</a></li>
-          <li><a href="{% url 'allocated_students' %}" class="text-white hover:text-gray-300 text-[30px]">Students</a></li>
-          <li><a href="{% url 'mentor_student_projects' %}" class="text-white hover:text-gray-300 text-[30px]">Projects</a></li>
-          
-          <li><a href="{% url 'login' %}" class="text-white hover:text-gray-300 text-[30px]">Logout</a></li>
-        </ul>
-      </nav>
-    </aside>
+    <nav class="site-nav">
+      <div class="name">
+        Dashboard
+        <svg width="24" height="24" viewBox="0 0 24 24">
+          <path d="M11.5,22C11.64,22 11.77,22 11.9,21.96C12.55,21.82 13.09,21.38 13.34,20.78C13.44,20.54 13.5,20.27 13.5,20H9.5A2,2 0 0,0 11.5,22M18,10.5C18,7.43 15.86,4.86 13,4.18V3.5A1.5,1.5 0 0,0 11.5,2A1.5,1.5 0 0,0 10,3.5V4.18C7.13,4.86 5,7.43 5,10.5V16L3,18V19H20V18L18,16M19.97,10H21.97C21.82,6.79 20.24,3.97 17.85,2.15L16.42,3.58C18.46,5 19.82,7.35 19.97,10M6.58,3.58L5.15,2.15C2.76,3.97 1.18,6.79 1,10H3C3.18,7.35 4.54,5 6.58,3.58Z"></path>
+        </svg>
+      </div>
+      <ul>
+        <li class="active"><a href="{% url 'mentor_dashboard' %}">Dashboard</a></li>
+        <li><a href="{% url 'allocated_students' %}">Students</a></li>
+        <li><a href="{% url 'mentor_student_projects' %}">Projects</a></li>
+        <li><a href="{% url 'login' %}">Logout</a></li>
+      </ul>
+      <div class="note">
+        <h3>Welcome, Guide {{ user.username }}!</h3>
+        <p>Manage your resources and help students with their projects.</p>
+      </div>
+    </nav>
 
     <!-- Main Content -->
-    <main class="flex-1 p-8">
-      <!-- Header -->
+    <main>
       <header>
-        <h1 class="text-3xl font-semibold">Welcome, Guide {{ user.username }}👋</h1>
-        <p class="text-gray-600 mt-2">Manage your resources and help students with their projects!</p>
+        <h1 class="title">Guide Dashboard</h1>
       </header>
 
-      <!-- Upload Resources and Overview Section -->
-      <section class="mt-10 flex-container">
-        <div class="flex-item">
-          <h2 class="text-xl font-semibold mb-4">Resource Management</h2>
+      
+
+      <!-- Resource Management and Project Overview -->
+      <div class="content-columns">
+        <div class="col">
+          <h2><ul><b><i>Upload Resources</i></b></ul></h2><br>
           <div class="p-6 bg-white rounded-lg shadow-md">
-            <h3 class="text-lg font-semibold">Upload Resources</h3>
-            <p class="text-gray-600 mt-2">Share resources such as PDFs, documents, and guides with your students.</p>
             <form action="{% url 'mentor_dashboard' %}" method="POST" class="mt-4" enctype="multipart/form-data">
               {% csrf_token %}
               <div class="grid grid-cols-1 gap-4">
                 <div>
-                  <label class="block text-sm font-medium text-gray-700">Title</label>
+                  <label class="label">Title</label>
                   {{ form.title }}
-                </div>
+                </div><br>
                 <div>
-                  <label class="block text-sm font-medium text-gray-700">File</label>
+                  <label class="label">File</label>
                   {{ form.file }}
-                </div>
+                </div><br>
                 <div>
-                  <label class="block text-sm font-medium text-gray-700">Description</label>
-                  {{ form.description }}
+                  <label class="label">Students</label>
+                  <div class="space-y-2">
+                    {% for student in allocated_students %}
+                      <div>
+                        <input type="checkbox" name="students" value="{{ student.id }}" id="student_{{ student.id }}" class="checkbox">
+                        <label for="student_{{ student.id }}">{{ student.username }}</label>
+                      </div>
+                    {% empty %}
+                      <p>No students are allocated to you yet.</p>
+                    {% endfor %}
+                  </div>
                 </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700">Students</label>
-                  {{ form.students }}
-                </div>
-              </div>
-              <button type="submit" class="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg">Upload</button>
+              </div><br>
+              <button type="submit" class="button">Upload</button>
             </form>
           </div>
         </div>
 
-        <!-- Activity Overview and Upcoming Deadlines Section -->
-        <div class="flex-item">
-          <!-- Activity Overview -->
-          <h2 class="text-xl font-semibold mb-4">Activity Overview</h2>
+        <div class="col">
+          <h2><ul><b><i>Projects Overview</i></b></ul></h2><br>
           <div class="p-6 bg-white rounded-lg shadow-md">
-            <h3 class="text-lg font-semibold">Projects Overview</h3>
-            <p class="text-gray-600 mt-2">Current projects you are mentoring.</p>
-            <ul class="mt-4 space-y-3">
-              {% for project in project_data %}
-              <li class="flex justify-between">
-                <span>{{ project.title }}</span>
-                <span class="text-gray-500">Completion: {{ project.completion_percentage }}%</span>
-              </li>
-              {% empty %}
-              <p class="text-gray-600">No projects are currently assigned to you.</p>
-              {% endfor %}
-            </ul>
+            {% for project in project_data %}
+            <div class="item">
+              <h3 class="text-xl font-semibold">{{ project.title }}</h3>
+              <p><strong>Completion:</strong> {{ project.completion_percentage }}%</p>
+            </div>
+            {% empty %}
+            <p>No projects are currently assigned to you.</p>
+            {% endfor %}
           </div>
+        </div>
+        </div>
 
-          <!-- Upcoming Deadlines -->
-          <h2 class="text-xl font-semibold mb-4 mt-10">Upcoming Deadlines</h2>
+        <div class="col">
+          <h2><ul><b><i>Upcoming Deadlines</i></b></ul></h2><br>
           <div class="p-6 bg-white rounded-lg shadow-md">
             {% if upcoming_deadlines %}
-              <ul class="space-y-3">
-                {% for project in upcoming_deadlines %}
-                  <li class="flex justify-between">
-                    <span class="font-medium">{{ project.title }}</span>
-                    <span class="text-gray-500">Deadline: {{ project.due_date }}</span>
-                  </li>
-                {% endfor %}
-              </ul>
+            <ul class="item">
+              {% for project in upcoming_deadlines %}
+              <li>
+                <h3>{{ project.title }}</h3>
+                <p>Deadline: {{ project.due_date }}</p>
+              </li>
+              {% endfor %}
+            </ul>
             {% else %}
-              <p class="text-gray-600">No upcoming deadlines this week.</p>
+            <p>No upcoming deadlines this week.</p>
             {% endif %}
           </div>
         </div>
-      </section>
+      </div>
     </main>
   </div>
+
 </body>
 </html>
