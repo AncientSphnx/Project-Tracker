@@ -11,6 +11,8 @@
   <style>
     .row{
       width:1000px;
+      padding-left: 10px;
+      padding-right: 10px;
       border-top: 4px solid #d56ec7;
       background: #ebecee;
       box-shadow: 0 0 5px rgba(0, 0, 0, 0.04);
@@ -152,7 +154,7 @@
       
 
       <div class="col">
-        <h2><ul><b><i>📚 Resources Shared by Your Guide</i></b></ul></h2><br>
+        <h2><b><i>📚 Resources Shared by Your Guide</i></b></h2><br>
             <div class="p-6 bg-white rounded-lg shadow-md">
                 <ul>
                     {% for resource in user.accessible_resources.all %}
