@@ -12,14 +12,21 @@ It provides dashboards, progress tracking, and resource sharing features to stre
 
 🚀 Features
 
-✅ Authentication & Roles – Students, Mentors, and Admins
-✅ Custom Dashboards – tailored to each role
-✅ Project Management – create, update, delete projects with deadlines
-✅ Phases & Tasks – organize projects into phases and track completion
-✅ Progress Tracker – visualize project, phase, and task progress
-✅ Resource Sharing – mentors ↔ students file exchange
-✅ Profile Management – update profile picture & details
-✅ Notifications & Updates – keep track of changes with comments
+✅ Authentication & Roles – Students, Mentors, and Admins.
+
+✅ Custom Dashboards – tailored to each role.
+
+✅ Project Management – create, update, delete projects with deadlines.
+
+✅ Phases & Tasks – organize projects into phases and track completion.
+
+✅ Progress Tracker – visualize project, phase, and task progress.
+
+✅ Resource Sharing – mentors ↔ students file exchange.
+
+✅ Profile Management – update profile picture & details.
+
+✅ Notifications & Updates – keep track of changes with comments.
 
 🏗️ Tech Stack
 
@@ -32,7 +39,8 @@ Database: SQLite (default, easily replaceable with PostgreSQL/MySQL)
 Authentication: Custom User Model with Role-Based Access Control
 
 📂 Project Structure
-```MySite2/              # Django project config
+```
+MySite2/              # Django project config
 ├── manage.py
 ├── MySite2/          # Core project settings (urls, wsgi, asgi, settings)
 └── MySiteApp/        # Main app
@@ -73,7 +81,7 @@ python manage.py runserver
 
 - View assigned projects & tasks
 
--  resources for mentors
+- Resources for mentors
 
 - Track progress
 
