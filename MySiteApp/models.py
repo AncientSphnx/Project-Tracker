@@ -11,7 +11,6 @@ class User(AbstractUser):
         ('admin', 'Admin'),
     ]
     role = models.CharField(max_length=10, choices=ROLE_CHOICES,)
-    id = models.AutoField(primary_key=True)
     profile_picture = models.ImageField(upload_to='profile_pictures/', null=True, blank=True)
     mentor = models.ForeignKey(
         'self', 
@@ -27,7 +26,6 @@ class User(AbstractUser):
 # User Table
 class users_table(models.Model):
     user_id = models.AutoField(primary_key=True)  # Auto-incrementing primary key
-    email = models.EmailField(unique=True)       # Ensures unique emails
     role = models.CharField(max_length=50)       # Role of the user
     name = models.CharField(max_length=100)      # Name of the user
 
